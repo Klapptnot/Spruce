@@ -1,0 +1,10 @@
+# Ignore files will start with _
+# to not edit this file every time
+**/_*
+**/._*
+
+.vscode/
+nightly/
+runtime/
+custom/
+test/
