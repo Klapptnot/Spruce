@@ -12,76 +12,6 @@ SPRUCE = {
   },
 }
 
-local default = {
-  items = {
-    main.blocks.MODE,
-    main.blocks.FILE,
-    main.blocks.LSP_INFO,
-    main.add_vim_expr("%="),
-    main.blocks.GIT_INFO,
-    main.blocks.CURSOR_POS,
-    main.blocks.FILE_TYPE,
-    main.blocks.FILE_ENCODING,
-    main.blocks.CWD,
-    main.add_lua_fn(function(_)
-      local win = require("plenary.popup").create("", {
-        title = "New CWD",
-        style = "minimal",
-        borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-        borderhighlight = "pathBr",
-        titlehighlight = "pathToGo",
-        focusable = true,
-        width = 50,
-        height = 1,
-      })
-
-      vim.cmd("normal A")
-      vim.cmd("startinsert")
-
-      vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
-
-      vim.keymap.set({ "i", "n" }, "<CR>", function()
-        local new = vim.trim(vim.fn.getline("."))
-        vim.api.nvim_win_close(win, true)
-        vim.cmd.stopinsert()
-        vim.fn.chdir(new)
-      end, { buffer = 0 })
-    end),
-  },
-  colors = {
-    blocks = {
-      mode = {
-        normal = "Yogurt",
-        insert = "MintGreen",
-        visual = "Cyan",
-        prompt = "Purple",
-        replace = "Pink",
-        other = "Ocre",
-      },
-      cwd = "Mauve",
-      file = "DustyRose",
-      file_type = "Beige",
-      lsp_info = {
-        name = "Skin",
-        error = "Red",
-        hint = "Blue",
-        warn = "Orange",
-        info = "CandyPurple",
-      },
-      git_info = {
-        branch = "DarkBrown",
-        changed = "Indigo",
-        added = "Green",
-        removed = "Red",
-      },
-      cursor_pos = "SolarWhite",
-      file_eol = "White",
-      file_encoding = "Peach",
-    },
-    bg = "#0101010",
-  },
-}
-
 -- Function to generate a random string
 local function random_string(length)
   -- if not length or length <= 0 then length = 16 end
@@ -361,6 +291,76 @@ function main.load(enable)
     end
   end, {})
 end
+
+local default = {
+  items = {
+    main.blocks.MODE,
+    main.blocks.FILE,
+    main.blocks.LSP_INFO,
+    main.add_vim_expr("%="),
+    main.blocks.GIT_INFO,
+    main.blocks.CURSOR_POS,
+    main.blocks.FILE_TYPE,
+    main.blocks.FILE_ENCODING,
+    main.blocks.CWD,
+    main.add_lua_fn(function(_)
+      local win = require("plenary.popup").create("", {
+        title = "New CWD",
+        style = "minimal",
+        borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+        borderhighlight = "pathBr",
+        titlehighlight = "pathToGo",
+        focusable = true,
+        width = 50,
+        height = 1,
+      })
+
+      vim.cmd("normal A")
+      vim.cmd("startinsert")
+
+      vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
+
+      vim.keymap.set({ "i", "n" }, "<CR>", function()
+        local new = vim.trim(vim.fn.getline("."))
+        vim.api.nvim_win_close(win, true)
+        vim.cmd.stopinsert()
+        vim.fn.chdir(new)
+      end, { buffer = 0 })
+    end),
+  },
+  colors = {
+    blocks = {
+      mode = {
+        normal = "Yogurt",
+        insert = "MintGreen",
+        visual = "Cyan",
+        prompt = "Purple",
+        replace = "Pink",
+        other = "Ocre",
+      },
+      cwd = "Mauve",
+      file = "DustyRose",
+      file_type = "Beige",
+      lsp_info = {
+        name = "Skin",
+        error = "Red",
+        hint = "Blue",
+        warn = "Orange",
+        info = "CandyPurple",
+      },
+      git_info = {
+        branch = "DarkBrown",
+        changed = "Indigo",
+        added = "Green",
+        removed = "Red",
+      },
+      cursor_pos = "SolarWhite",
+      file_eol = "White",
+      file_encoding = "Peach",
+    },
+    bg = "#0101010",
+  },
+}
 
 function main.setup(opts)
   opts = vim.tbl_deep_extend("force", opts, default)
