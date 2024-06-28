@@ -363,7 +363,11 @@ local default = {
 }
 
 function main.setup(opts)
-  opts = vim.tbl_deep_extend("force", opts, default)
+  if opts ~= nil then
+    opts = vim.tbl_deep_extend("force", opts, default)
+  else
+    opts = default
+  end
   vim.api.nvim_command("hi StatusLine guibg=" .. opts.colors.bg)
 
   for i, v in ipairs(opts.items) do
