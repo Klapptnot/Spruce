@@ -13,45 +13,7 @@ require("src.spruce.themes.accents").hg_load() -- Add spruce themes command
 require("src.spruce.themes").load()            -- Add spruce themes command
 -- stylua: ignore end
 
-local vibib = require("src.spruce.vibib") -- Enable statusline plugin
-
-vibib.setup({
-  vibib.blocks.MODE,
-  vibib.blocks.FILE,
-  vibib.blocks.LSP_INFO,
-  vibib.add_vim_expr("%="),
-  vibib.blocks.GIT_INFO,
-  vibib.blocks.CURSOR_POS,
-  vibib.blocks.FILE_TYPE,
-  vibib.blocks.FILE_ENCODING,
-  vibib.blocks.CWD,
-  vibib.add_lua_fn(function(_)
-    local win = require("plenary.popup").create("", {
-      title = "New CWD",
-      style = "minimal",
-      borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-      borderhighlight = "pathBr",
-      titlehighlight = "pathToGo",
-      focusable = true,
-      width = 50,
-      height = 1,
-    })
-
-    vim.cmd("normal A")
-    vim.cmd("startinsert")
-
-    vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
-
-    vim.keymap.set({ "i", "n" }, "<CR>", function()
-      local new = vim.trim(vim.fn.getline("."))
-      vim.api.nvim_win_close(win, true)
-      vim.cmd.stopinsert()
-      vim.fn.chdir(new)
-    end, { buffer = 0 })
-  end),
-}, {})
-
-vibib.load(true)
+require("src.spruce.vibib").setup().load(true) -- Enable statusline plugin
 
 local tbmerge = require("src.warm.table").merge
 

@@ -13,6 +13,41 @@ SPRUCE = {
 }
 
 local default = {
+  items = {
+    main.blocks.MODE,
+    main.blocks.FILE,
+    main.blocks.LSP_INFO,
+    main.add_vim_expr("%="),
+    main.blocks.GIT_INFO,
+    main.blocks.CURSOR_POS,
+    main.blocks.FILE_TYPE,
+    main.blocks.FILE_ENCODING,
+    main.blocks.CWD,
+    main.add_lua_fn(function(_)
+      local win = require("plenary.popup").create("", {
+        title = "New CWD",
+        style = "minimal",
+        borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+        borderhighlight = "pathBr",
+        titlehighlight = "pathToGo",
+        focusable = true,
+        width = 50,
+        height = 1,
+      })
+
+      vim.cmd("normal A")
+      vim.cmd("startinsert")
+
+      vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
+
+      vim.keymap.set({ "i", "n" }, "<CR>", function()
+        local new = vim.trim(vim.fn.getline("."))
+        vim.api.nvim_win_close(win, true)
+        vim.cmd.stopinsert()
+        vim.fn.chdir(new)
+      end, { buffer = 0 })
+    end),
+  },
   colors = {
     blocks = {
       mode = {
@@ -327,17 +362,16 @@ function main.load(enable)
   end, {})
 end
 
-function main.setup(items, opts)
+function main.setup(opts)
   opts = vim.tbl_deep_extend("force", opts, default)
   vim.api.nvim_command("hi StatusLine guibg=" .. opts.colors.bg)
-  if items == nil then return main end
 
-  for i, v in ipairs(items) do
+  for i, v in ipairs(opts.items) do
     local color = opts.colors.blocks[string.lower(v)]
-    if color ~= nil then items[i] = str.format(blocks[v], color) end
+    if color ~= nil then opts.items[i] = str.format(blocks[v], color) end
   end
 
-  local fcont = HEADER .. table.concat(items, "") .. FOOTER
+  local fcont = HEADER .. table.concat(opts.items, "") .. FOOTER
   uts.str_to_file(fcont, path.join(uts.fwd(false), "vibib_filled.lua"))
   return main
 end

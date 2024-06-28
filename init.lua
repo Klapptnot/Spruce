@@ -17,7 +17,7 @@ do -- Add config folder to package.path
 end
 
 -- Run tweaks on nvim & lua behavior
-require("src.spruce.tweaks").apply(true, true)
+require("src.spruce.tweaks").apply({ "lua_functions", "reset_cursor", "detect_indent" })
 
 -- Initialize things that needs to be downloaded, like lazy
 require("src.bootstrap") -- This creates the `custom` folder and init.lua
@@ -35,17 +35,3 @@ config.plugins:merge(custom.plugins):apply()
 
 -- Load spruce files
 require("src.spruce")
-
--- Set indentation based on guesses, works better btw
-vim.api.nvim_create_augroup("SetIndentation", { clear = true })
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-  group = "SetIndentation",
-  callback = function()
-    local indent = require("src.furnace.gindent")
-    local width = indent.guess()
-    if width == nil then return end
-    vim.bo.shiftwidth = width
-    vim.bo.tabstop = width
-    vim.bo.softtabstop = width
-  end,
-})

@@ -1,34 +1,39 @@
 ---@diagnostic disable: deprecated
 
-local main = {}
+SPRUCE_TWEAKS = {
+  detect_indent = false,
+  reset_cursor = false,
+  lua_functions = false,
+}
 
----Apply tweaks to the runtime environment and functionality
----@param nvim boolean
----@param lua boolean
----@return integer number of nvim tweaks
----@return integer number of lua tweaks
-function main.apply(nvim, lua)
-  if nvim == nil then nvim = false end
-  assert(type(nvim), "argument #1 must be boolean")
-  if lua == nil then lua = false end
-  assert(type(lua), "argument #2 must be boolean")
-
-  local nvmt, luat = 0, 0
-
-  NVIM_TWEAKED_SP = false
-  if nvim then
+local tweaks_fns = {
+  detect_indent = function()
+    -- Set indentation based on guesses, works better btw
+    vim.api.nvim_create_augroup("SetIndentation", { clear = true })
+    vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+      group = "SetIndentation",
+      callback = function()
+        local indent = require("src.furnace.gindent")
+        local width = indent.guess()
+        if width == nil then return end
+        vim.bo.shiftwidth = width
+        vim.bo.tabstop = width
+        vim.bo.softtabstop = width
+      end,
+    })
+    SPRUCE_TWEAKS.detect_indent = true
+  end,
+  reset_cursor = function()
     -- Reset cursor style on exit
     vim.api.nvim_create_autocmd({ "VimLeave" }, {
       pattern = { "*" },
       command = 'set guicursor= | call chansend(v:stderr, "\\x1b[ q")',
     })
 
-    NVIM_TWEAKED_SP = true
-    nvmt = 1
-  end
+    SPRUCE_TWEAKS.reset_cursor = true
+  end,
 
-  NVIM_LUA_TWEAKED_SP = false
-  if lua then
+  lua_functions = function()
     -- !! Neovim has Lua 5.1, so make it appear Lua 5.4
     -- !! moving unpack to table.unpack
     -- !! making forward compatibility easy (When available, remove this)
@@ -65,12 +70,24 @@ function main.apply(nvim, lua)
     -- ```
     ---@param s string
     string.put = function(s) io.write(s) end
+    SPRUCE_TWEAKS.lua_functions = true
+  end,
+}
 
-    NVIM_LUA_TWEAKED_SP = true
-    luat = 3
+local main = {}
+
+---Apply tweaks to the runtime environment and functionality
+
+function main.apply(tweaks)
+  local failed = {}
+  for i, v in ipairs(tweaks) do
+    if tweaks_fns[v] ~= nil then
+      tweaks_fns[v]()
+    else
+      failed[#failed + 1] = i
+    end
   end
-
-  return nvmt, luat
+  return failed
 end
 
 return main
