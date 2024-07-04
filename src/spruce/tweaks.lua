@@ -18,7 +18,7 @@ local tweaks_fns = {
     end
 
     -- Set indentation based on guesses, works better btw
-    vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+    vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter", "BufEnter" }, {
       pattern = "*",
       command = "SpruceGuessIndent",
     })
