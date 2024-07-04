@@ -8,19 +8,22 @@ SPRUCE_TWEAKS = {
 
 local tweaks_fns = {
   detect_indent = function()
+    local function guess_set_indent()
+      local indent = require("src.furnace.gindent")
+      local width = indent.guess()
+      if width == nil then return end
+      vim.bo.shiftwidth = width
+      vim.bo.tabstop = width
+      vim.bo.softtabstop = width
+    end
+
     -- Set indentation based on guesses, works better btw
     vim.api.nvim_create_augroup("SetIndentation", { clear = true })
     vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
       group = "SetIndentation",
-      callback = function()
-        local indent = require("src.furnace.gindent")
-        local width = indent.guess()
-        if width == nil then return end
-        vim.bo.shiftwidth = width
-        vim.bo.tabstop = width
-        vim.bo.softtabstop = width
-      end,
+      callback = guess_set_indent,
     })
+    vim.api.nvim_create_user_command("SpruceGuessIndent", guess_set_indent, {})
     SPRUCE_TWEAKS.detect_indent = true
   end,
   reset_cursor = function()
