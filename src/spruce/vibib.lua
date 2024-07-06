@@ -2,6 +2,7 @@
 
 local main = {}
 
+local color = require("src.warm.color")
 local path = require("src.warm.path")
 local str = require("src.warm.str")
 local uts = require("src.warm.uts")
@@ -75,8 +76,8 @@ return function ()
   local skip = vim.api.nvim_get_current_win() ~= vim.g.statusline_winid
 
   if skip then
-    return str.format(
-      "  INACTIVE> {{}}%={{}}",
+    return string.format(
+      "  INACTIVE> %s%%=%s",
       (str.boolean(name) and path.basename(name)) or "Empty",
       str.fallback(vim.bo[sbuf].filetype, "unknown")
     )
@@ -98,69 +99,69 @@ end
 ---@enum
 -- stylua: ignore
 main.blocks = {
-  MODE          = "MODE",
-  FILE          = "FILE",
-  FILE_TYPE     = "FILE_TYPE",
-  FILE_EOL      = "FILE_EOL",
-  FILE_ENCODING = "FILE_ENCODING",
-  LSP_INFO      = "LSP_INFO",
-  GIT_INFO      = "GIT_INFO",
-  CURSOR_POS    = "CURSOR_POS",
-  CWD           = "CWD",
+  MODE          = "mode",
+  FILE          = "file",
+  FILE_TYPE     = "file_type",
+  FILE_EOL      = "file_eol",
+  FILE_ENCODING = "file_encoding",
+  LSP_INFO      = "lsp_info",
+  GIT_INFO      = "git_info",
+  CURSOR_POS    = "cursor_pos",
+  CWD           = "cwd",
 }
 
 local blocks = {
-  MODE = [[
+  mode = [[
   do
     -- This table was initialy copied from
     -- nvchad statusline
     -- to get the posible modes
     local vim_modes = {
-      ["n"]        = { "NORMAL",       "{<normal>}" },
-      ["no"]       = { "NORMAL (no)",  "{<normal>}" },
-      ["nov"]      = { "NORMAL (nov)", "{<normal>}" },
-      ["noV"]      = { "NORMAL (noV)", "{<normal>}" },
-      ["noCTRL-V"] = { "NORMAL",       "{<normal>}" },
-      ["niI"]   = { "NORMAL i",        "{<normal>}" },
-      ["niR"]   = { "NORMAL r",        "{<normal>}" },
-      ["niV"]   = { "NORMAL v",        "{<normal>}" },
+      ["n"]        = { "NORMAL",       "Vibib_mode_normal" },
+      ["no"]       = { "NORMAL (no)",  "Vibib_mode_normal" },
+      ["nov"]      = { "NORMAL (nov)", "Vibib_mode_normal" },
+      ["noV"]      = { "NORMAL (noV)", "Vibib_mode_normal" },
+      ["noCTRL-V"] = { "NORMAL",       "Vibib_mode_normal" },
+      ["niI"]   = { "NORMAL i",        "Vibib_mode_normal" },
+      ["niR"]   = { "NORMAL r",        "Vibib_mode_normal" },
+      ["niV"]   = { "NORMAL v",        "Vibib_mode_normal" },
 
-      ["nt"]    = { "NTERMINAL",       "{<normal>}" },
-      ["ntT"]   = { "NTERMINAL (ntT)", "{<normal>}" },
+      ["nt"]    = { "NTERMINAL",       "Vibib_mode_normal" },
+      ["ntT"]   = { "NTERMINAL (ntT)", "Vibib_mode_normal" },
 
-      ["v"]   = { "VISUAL",          "{<visual>}" },
-      ["vs"]  = { "V-CHAR (Ctrl O)", "{<visual>}" },
-      ["V"]   = { "V-LINE",          "{<visual>}" },
-      ["Vs"]  = { "V-LINE",          "{<visual>}" },
-      [""]   = { "V-BLOCK",         "{<visual>}" },
+      ["v"]   = { "VISUAL",          "Vibib_mode_visual" },
+      ["vs"]  = { "V-CHAR (Ctrl O)", "Vibib_mode_visual" },
+      ["V"]   = { "V-LINE",          "Vibib_mode_visual" },
+      ["Vs"]  = { "V-LINE",          "Vibib_mode_visual" },
+      [""]   = { "V-BLOCK",         "Vibib_mode_visual" },
 
-      ["i"]   = { "INSERT",              "{<insert>}" },
-      ["ic"]  = { "INSERT (completion)", "{<insert>}" },
-      ["ix"]  = { "INSERT completion",   "{<insert>}" },
+      ["i"]   = { "INSERT",              "Vibib_mode_insert" },
+      ["ic"]  = { "INSERT (completion)", "Vibib_mode_insert" },
+      ["ix"]  = { "INSERT completion",   "Vibib_mode_insert" },
 
-      ["t"]   = { "TERMINAL", "{<prompt>}" },
+      ["t"]   = { "TERMINAL", "Vibib_mode_prompt" },
 
-      ["R"]   = { "REPLACE",           "{<replace>}" },
-      ["Rc"]  = { "REPLACE (Rc)",      "{<replace>}" },
-      ["Rx"]  = { "REPLACEa (Rx)",     "{<replace>}" },
-      ["Rv"]  = { "V-REPLACE",         "{<replace>}" },
-      ["Rvc"] = { "V-REPLACE (Rvc)",   "{<replace>}" },
-      ["Rvx"] = { "V-REPLACE (Rvx)",   "{<replace>}" },
+      ["R"]   = { "REPLACE",           "Vibib_mode_replace" },
+      ["Rc"]  = { "REPLACE (Rc)",      "Vibib_mode_replace" },
+      ["Rx"]  = { "REPLACEa (Rx)",     "Vibib_mode_replace" },
+      ["Rv"]  = { "V-REPLACE",         "Vibib_mode_replace" },
+      ["Rvc"] = { "V-REPLACE (Rvc)",   "Vibib_mode_replace" },
+      ["Rvx"] = { "V-REPLACE (Rvx)",   "Vibib_mode_replace" },
 
-      ["s"]   = { "SELECT",     "{<visual>}" },
-      ["S"]   = { "S-LINE",     "{<visual>}" },
-      [""]   = { "S-BLOCK",    "{<visual>}" },
+      ["s"]   = { "SELECT",     "Vibib_mode_visual" },
+      ["S"]   = { "S-LINE",     "Vibib_mode_visual" },
+      [""]   = { "S-BLOCK",    "Vibib_mode_visual" },
 
-      ["c"]   = { "COMMAND",    "{<prompt>}" },
-      ["cv"]  = { "COMMAND",    "{<prompt>}" },
-      ["ce"]  = { "COMMAND",    "{<prompt>}" },
-      ["r"]   = { "PROMPT",     "{<prompt>}" },
-      ["rm"]  = { "MORE",       "{<prompt>}" },
-      ["r?"]  = { "CONFIRM",    "{<prompt>}" },
-      ["x"]   = { "CONFIRM",    "{<prompt>}" },
-      ["!"]   = { "SHELL",      "{<prompt>}" },
+      ["c"]   = { "COMMAND",    "Vibib_mode_prompt" },
+      ["cv"]  = { "COMMAND",    "Vibib_mode_prompt" },
+      ["ce"]  = { "COMMAND",    "Vibib_mode_prompt" },
+      ["r"]   = { "PROMPT",     "Vibib_mode_prompt" },
+      ["rm"]  = { "MORE",       "Vibib_mode_prompt" },
+      ["r?"]  = { "CONFIRM",    "Vibib_mode_prompt" },
+      ["x"]   = { "CONFIRM",    "Vibib_mode_prompt" },
+      ["!"]   = { "SHELL",      "Vibib_mode_prompt" },
 
-      ["sp"]  = { "SPRUCE",     "{<other>}" },
+      ["sp"]  = { "SPRUCE",     "Vibib_mode_other" },
     }
 
     if str.has("neo-tree,Outline", str.fallback(vim.bo[sbuf].filetype, "unknown")) then
@@ -169,10 +170,10 @@ local blocks = {
     end
 
     local mode, color = table.unpack(vim_modes[modi])
-    bar[#bar + 1] = str.format("%#{{1}}Bs#  {{2}} %#{{1}}F#{{3}}", color, mode, ris)
+    bar[#bar + 1] = string.format("%%#%s#  %s ", color, mode)
   end]],
 
-  FILE = [[
+  file = [[
   do
     local icon = "󰈚 " -- Default icon
     local file = (str.boolean(name) and path.basename(name)) or "Empty"
@@ -185,32 +186,41 @@ local blocks = {
     end
 
     bar[#bar + 1] =
-      string.format("%%#{1}Bs# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
+      string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
   end]],
 
-  FILE_TYPE = [[
+  file_type = [[
   do
     local type = str.fallback(vim.bo[sbuf].filetype, "unknown")
-    bar[#bar + 1] = "%#{1}Fs# " .. type .. " %#StatusLine#"
+    bar[#bar + 1] = "%#Vibiv_file_type# " .. type .. " %#StatusLine#"
   end]],
 
-  FILE_EOL = [[
-  bar[#bar + 1] = "%#{1}# <> %#StatusLine#"]],
-
-  FILE_ENCODING = [[
+  file_eol = [[
   do
-    local enc = str.fallback(vim.bo[sbuf].fileencoding, "")
-    bar[#bar + 1] = "%#{1}# " .. enc .. " %#StatusLine#"
+    local eol = vim.bo[sbuf].fileformat
+    if eol == "unix" then
+      bar[#bar + 1] = "%#Vibib_file_eol# LF %#StatusLine#"
+    else
+      bar[#bar + 1] = "%#Vibib_file_eol# CRLF %#StatusLine#"
+    end
   end]],
 
-  CURSOR_POS = [[  bar[#bar + 1] = "%#{1}# (%p%%) Ch:Ln/Tl %c:%l/%L => [%b][0x%B] %#StatusLine#"]],
+  file_encoding = [[
+  do
+    local enc = vim.bo[sbuf].fileencoding
+    if enc ~= "" then
+      bar[#bar + 1] = "%#Vibib_file_encoding# " .. enc .. " %#StatusLine#"
+    end
+  end]],
 
-  GIT_INFO = [[
+  cursor_pos = [[  bar[#bar + 1] = "%#Vibib_cursor_pos# (%p%%) Ch:Ln/Tl %c:%l/%L => [%b][0x%B] %#StatusLine#"]],
+
+  git_info = [[
   do
     if igit then
       local gst = vim.b[sbuf].gitsigns_status_dict
       bar[#bar + 1] = string.format(
-        "%%#{<branch>}Bs# %s %%#StatusLine#",
+        "%%#Vibib_git_branch# %s %%#StatusLine#",
         vim.b[sbuf].gitsigns_status_dict.head
       )
       gst = {
@@ -219,19 +229,19 @@ local blocks = {
         gst.removed,
       }
       local mod = { "", "", "" }
-      if gst[1] and gst[1] > 0 then mod[1] = "%#{<added>}Fs#  " .. gst[1] end
-      if gst[2] and gst[2] > 0 then mod[2] = "%#{<changed>}Fs#  " .. gst[2] end
-      if gst[3] and gst[3] > 0 then mod[3] = "%#{<removed>}Fs#  " .. gst[3] end
+      if gst[1] and gst[1] > 0 then mod[1] = "%#Vibib_git_added#  " .. gst[1] end
+      if gst[2] and gst[2] > 0 then mod[2] = "%#Vibib_git_changed#  " .. gst[2] end
+      if gst[3] and gst[3] > 0 then mod[3] = "%#Vibib_git_removed#  " .. gst[3] end
       bar[#bar + 1] = table.concat(mod, "") .. "%#StatusLine#"
     end
   end]],
 
-  LSP_INFO = [[
+  lsp_info = [[
   do
     if rawget(vim, "lsp") ~= nil then
       for _, lsp in ipairs(vim.lsp.get_active_clients()) do
         if lsp.name ~= "null-ls" and lsp.attached_buffers[sbuf] ~= nil then
-          bar[#bar + 1] = "%#{<name>}Bs#   " .. lsp.name .. " %#StatusLine#"
+          bar[#bar + 1] = "%#Vibib_lsp_name#   " .. lsp.name .. " %#StatusLine#"
           break
         end
       end
@@ -242,16 +252,16 @@ local blocks = {
         #vim.diagnostic.get(sbuf, { severity = vim.diagnostic.severity.ERROR }),
       }
       local stats = { "", "", "", "" } --        
-      if stat[1] and stat[1] > 0 then stats[1] = "%{<info>}Fs#  " .. stat[1] end
-      if stat[2] and stat[2] > 0 then stats[2] = "%#{<hint>}Fs#  " .. stat[2] end
-      if stat[3] and stat[3] > 0 then stats[3] = "%#{<warn>}Fs#  " .. stat[3] end
-      if stat[4] and stat[4] > 0 then stats[4] = "%#{<error>}Fs#  " .. stat[4] end
+      if stat[1] and stat[1] > 0 then stats[1] = "%#Vibib_lsp_info#  " .. stat[1] end
+      if stat[2] and stat[2] > 0 then stats[2] = "%#Vibib_lsp_hint#  " .. stat[2] end
+      if stat[3] and stat[3] > 0 then stats[3] = "%#Vibib_lsp_warn#  " .. stat[3] end
+      if stat[4] and stat[4] > 0 then stats[4] = "%#Vibib_lsp_error#  " .. stat[4] end
       bar[#bar + 1] = table.concat(stats, "") .. " %#StatusLine#"
     end
   end]],
 
-  CWD = [[
-  bar[#bar + 1] = "%#{1}Bs# 󰉖 "
+  cwd = [[
+  bar[#bar + 1] = "%#Vibib_cwd# 󰉖 "
     .. str.fallback(path.basename(vim.fn.getcwd()), "")
     .. " %T%#StatusLine#"]],
 }
@@ -296,6 +306,7 @@ function main.load(enable)
   end, {})
 end
 
+-- stylua: ignore
 local default = {
   items = {
     left = { main.blocks.MODE, main.blocks.FILE, main.blocks.LSP_INFO },
@@ -304,6 +315,7 @@ local default = {
       main.blocks.CURSOR_POS,
       main.blocks.FILE_TYPE,
       main.blocks.FILE_ENCODING,
+      main.blocks.FILE_EOL,
       main.blocks.CWD,
       main.add_lua_fn(function(_)
         local win = require("plenary.popup").create("", {
@@ -333,35 +345,35 @@ local default = {
   },
   colors = {
     blocks = {
-      mode = {
-        normal = "Yogurt",
-        insert = "MintGreen",
-        visual = "Cyan",
-        prompt = "Purple",
-        replace = "Pink",
-        other = "Ocre",
+      mode          = {
+        normal  = "#fdc5f5", -- Yogurt
+        insert  = "#6cffb8", -- Mint green
+        visual  = "#6ce8ff", -- Cyan
+        prompt  = "#801de6", -- Purple
+        replace = "#fd65c5", -- Pink
+        other   = "#b8966c", -- Ocre
       },
-      cwd = "Mauve",
-      file = "DustyRose",
-      file_type = "Beige",
-      lsp_info = {
-        name = "Skin",
-        error = "Red",
-        hint = "Blue",
-        warn = "Orange",
-        info = "CandyPurple",
+      cwd           = "#bd93f9", -- Mauve
+      file          = "#e188a4", -- Dusty rose
+      file_type     = "#ffe8b8", -- Beige
+      lsp_info      = {
+        name  = "#fdc5c5",   -- Skin
+        error = "#ff6e6e",   -- Red
+        hint  = "#6c8cff",   -- Blue
+        warn  = "#ffb86c",   -- Orange
+        info  = "#a020f0",   -- Candy Purple
       },
-      git_info = {
-        branch = "DarkBrown",
-        changed = "Indigo",
-        added = "Green",
-        removed = "Red",
+      git_info      = {
+        branch  = "#674533",     -- Dark brown
+        changed = "#4b4592",     -- Indigo
+        added   = "#6ff660",     -- Green
+        removed = "#ff6e6e",     -- Red
       },
-      cursor_pos = "SolarWhite",
-      file_eol = "White",
-      file_encoding = "Peach",
+      cursor_pos    = "#fff5f5", -- Solar white
+      file_eol      = "#f5f5ff", -- White
+      file_encoding = "#ffa98c", -- Peach
     },
-    bg = "#0101010",
+    bg = "#101010",
   },
   separators = {
     lis = "",
@@ -373,6 +385,16 @@ local aeettrs = [[
   bar[#bar + 1] = "%="
 ]]
 
+local function generate_hi(t, f)
+  for n, c in pairs(t) do
+    if color.brightness(c, 0.35) then
+      vim.api.nvim_set_hl(0, f .. n, { bg = c, fg = "#101010", bold = true })
+    else
+      vim.api.nvim_set_hl(0, f .. n, { bg = c, fg = "#fafaff", bold = true })
+    end
+  end
+end
+
 function main.setup(opts)
   if opts ~= nil then
     opts = vim.tbl_deep_extend("force", opts, default)
@@ -381,13 +403,27 @@ function main.setup(opts)
   end
   vim.api.nvim_command("hi StatusLine guibg=" .. opts.colors.bg)
 
-  for i, v in ipairs(opts.items.left) do
-    local color = opts.colors.blocks[string.lower(v)]
-    if color ~= nil then opts.items.left[i] = str.format(blocks[v], color) end
+  for i, bname in ipairs(opts.items.left) do
+    local color = opts.colors.blocks[bname]
+    if color ~= nil then
+      if type(color) == "table" then
+        generate_hi(color, "Vibib_" .. bname .. "_")
+      else
+        generate_hi({ [bname] = color }, "Vibib_")
+      end
+    end
+    opts.items.left[i] = blocks[bname]
   end
-  for i, v in ipairs(opts.items.right) do
-    local color = opts.colors.blocks[string.lower(v)]
-    if color ~= nil then opts.items.right[i] = str.format(blocks[v], color) end
+  for i, bname in ipairs(opts.items.right) do
+    local color = opts.colors.blocks[bname]
+    if color ~= nil then
+      if type(color) == "table" then
+        generate_hi(color, "Vibib_" .. bname .. "_")
+      else
+        generate_hi({ [bname] = color }, "Vibib_")
+      end
+    end
+    opts.items.right[i] = blocks[bname]
   end
 
   local fcont = str.format(HEADER, opts.separators)
