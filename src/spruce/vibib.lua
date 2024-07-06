@@ -91,10 +91,7 @@ return function ()
 
   local bar = {{}}
 ]]
-local FOOTER = [[
-  return table.concat(bar, " ")
-end
-]]
+local FOOTER = '\n  return table.concat(bar, " ")\nend\n'
 
 ---@enum
 -- stylua: ignore
@@ -263,13 +260,11 @@ local blocks = {
   cwd = [[
   bar[#bar + 1] = "%#Vibib_cwd# 󰉖 "
     .. str.fallback(path.basename(vim.fn.getcwd()), "")
-    .. " %T%#StatusLine#"]],
+    .. " %#StatusLine#"]],
 }
 
 function main.add_vim_expr(expr)
-  local form = [[
-  bar[#bar + 1] = "{}"
-]]
+  local form = '\n  bar[#bar + 1] = "{}"\n'
   return str.format(form, expr)
 end
 
@@ -283,9 +278,7 @@ function main.add_lua_fn(fn)
   endfunction
   ]]
   vim.api.nvim_command(str.format(cmd, rndm))
-  local form = [[
-  bar[#bar] = "%@__VIBIB_LUAFN_WRAPPER_{}@" .. bar[#bar]
-]]
+  local form = '\n  bar[#bar] = "%@__VIBIB_LUAFN_WRAPPER_{}@" .. bar[#bar]\n'
   return str.format(form, rndm)
 end
 
@@ -381,9 +374,7 @@ local default = {
   },
 }
 
-local aeettrs = [[
-  bar[#bar + 1] = "%="
-]]
+local aeettrs = '\n  bar[#bar + 1] = "%="\n'
 
 local function generate_hi(t, f)
   for n, c in pairs(t) do
@@ -412,7 +403,8 @@ function main.setup(opts)
         generate_hi({ [bname] = color }, "Vibib_")
       end
     end
-    opts.items.left[i] = blocks[bname]
+    local itb = blocks[bname]
+    if itb ~= nil then opts.items.left[i] = itb end
   end
   for i, bname in ipairs(opts.items.right) do
     local color = opts.colors.blocks[bname]
@@ -423,7 +415,8 @@ function main.setup(opts)
         generate_hi({ [bname] = color }, "Vibib_")
       end
     end
-    opts.items.right[i] = blocks[bname]
+    local itb = blocks[bname]
+    if itb ~= nil then opts.items.right[i] = itb end
   end
 
   local fcont = str.format(HEADER, opts.separators)
