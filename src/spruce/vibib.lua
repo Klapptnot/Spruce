@@ -76,13 +76,16 @@ return function ()
 
   if skip then
     return str.format(
-      "  INACTIVE> {}%={}",
+      "  INACTIVE> {{}}%={{}}",
       (str.boolean(name) and path.basename(name)) or "Empty",
       str.fallback(vim.bo[sbuf].filetype, "unknown")
     )
   end
 
-  local bar = {}
+  -- left/right separator icon
+  local lis, ris = "{<lis>}", "{<ris>}"
+
+  local bar = {{}}
 ]]
 local FOOTER = [[
   return table.concat(bar, " ")
@@ -163,7 +166,7 @@ local blocks = {
     end
 
     local mode, color = table.unpack(vim_modes[modi])
-    bar[#bar + 1] = str.format("%#{{1}}Bs#  {{2}} %#{{1}}F#", color, mode)
+    bar[#bar + 1] = str.format("%#{{1}}Bs#  {{2}} %#{{1}}F#{{3}}", color, mode, ris)
   end
 ]],
   FILE = [[
@@ -360,6 +363,10 @@ local default = {
     },
     bg = "#0101010",
   },
+  separators = {
+    lis = "",
+    ris = "",
+  },
 }
 
 function main.setup(opts)
@@ -375,7 +382,9 @@ function main.setup(opts)
     if color ~= nil then opts.items[i] = str.format(blocks[v], color) end
   end
 
-  local fcont = HEADER .. table.concat(opts.items, "") .. FOOTER
+  local header_fmtd = str.format(HEADER, opts.separators)
+
+  local fcont = header_fmtd .. table.concat(opts.items, "") .. FOOTER
   uts.str_to_file(fcont, path.join(uts.fwd(false), "vibib_filled.lua"))
   return main
 end
