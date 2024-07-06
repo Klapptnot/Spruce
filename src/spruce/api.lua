@@ -166,7 +166,7 @@ end
 
 function main.resize_win_interact()
   vim.api.nvim_notify(
-    "Reading keys to resize window. To exit, press any key not in\n        I\n      J K L",
+    "Reading keys to resize window. To exit, press any key not in\n     H J K L",
     vim.log.levels.INFO,
     { title = "Winsize > Spruce API" }
   )
