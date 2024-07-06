@@ -85,6 +85,9 @@ return function ()
   -- left/right separator icon
   local lis, ris = "{<lis>}", "{<ris>}"
 
+  -- to make colors match, keep track of foreground color
+  local lfgc = "#ffffff"
+
   local bar = {{}}
 ]]
 local FOOTER = [[
@@ -95,15 +98,15 @@ end
 ---@enum
 -- stylua: ignore
 main.blocks = {
-  MODE             = "MODE",
-  FILE             = "FILE",
-  FILE_TYPE        = "FILE_TYPE",
-  FILE_EOL         = "FILE_EOL",
-  FILE_ENCODING    = "FILE_ENCODING",
-  LSP_INFO         = "LSP_INFO",
-  GIT_INFO         = "GIT_INFO",
-  CURSOR_POS       = "CURSOR_POS",
-  CWD              = "CWD",
+  MODE          = "MODE",
+  FILE          = "FILE",
+  FILE_TYPE     = "FILE_TYPE",
+  FILE_EOL      = "FILE_EOL",
+  FILE_ENCODING = "FILE_ENCODING",
+  LSP_INFO      = "LSP_INFO",
+  GIT_INFO      = "GIT_INFO",
+  CURSOR_POS    = "CURSOR_POS",
+  CWD           = "CWD",
 }
 
 local blocks = {
@@ -167,8 +170,8 @@ local blocks = {
 
     local mode, color = table.unpack(vim_modes[modi])
     bar[#bar + 1] = str.format("%#{{1}}Bs#  {{2}} %#{{1}}F#{{3}}", color, mode, ris)
-  end
-]],
+  end]],
+
   FILE = [[
   do
     local icon = "󰈚 " -- Default icon
@@ -182,27 +185,26 @@ local blocks = {
     end
 
     bar[#bar + 1] =
-      string.format("%%#{1}Bs# %s %s %%#StatusLine#", icon, file)
-  end
-]],
+      string.format("%%#{1}Bs# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
+  end]],
+
   FILE_TYPE = [[
   do
     local type = str.fallback(vim.bo[sbuf].filetype, "unknown")
     bar[#bar + 1] = "%#{1}Fs# " .. type .. " %#StatusLine#"
-  end
-]],
+  end]],
+
   FILE_EOL = [[
-  bar[#bar + 1] = "%#{1}# <> %#StatusLine#"
-]],
+  bar[#bar + 1] = "%#{1}# <> %#StatusLine#"]],
+
   FILE_ENCODING = [[
   do
     local enc = str.fallback(vim.bo[sbuf].fileencoding, "")
     bar[#bar + 1] = "%#{1}# " .. enc .. " %#StatusLine#"
-  end
-]],
-  CURSOR_POS = [[
-  bar[#bar + 1] = "%#{1}# Ln %l, Col %c %#StatusLine#"
-]],
+  end]],
+
+  CURSOR_POS = [[  bar[#bar + 1] = "%#{1}# (%p%%) Ch:Ln/Tl %c:%l/%L => [%b][0x%B] %#StatusLine#"]],
+
   GIT_INFO = [[
   do
     if igit then
@@ -222,8 +224,8 @@ local blocks = {
       if gst[3] and gst[3] > 0 then mod[3] = "%#{<removed>}Fs#  " .. gst[3] end
       bar[#bar + 1] = table.concat(mod, "") .. "%#StatusLine#"
     end
-  end
-]],
+  end]],
+
   LSP_INFO = [[
   do
     if rawget(vim, "lsp") ~= nil then
@@ -246,13 +248,12 @@ local blocks = {
       if stat[4] and stat[4] > 0 then stats[4] = "%#{<error>}Fs#  " .. stat[4] end
       bar[#bar + 1] = table.concat(stats, "") .. " %#StatusLine#"
     end
-  end
-]],
+  end]],
+
   CWD = [[
   bar[#bar + 1] = "%#{1}Bs# 󰉖 "
     .. str.fallback(path.basename(vim.fn.getcwd()), "")
-    .. " %T%#StatusLine#"
-]],
+    .. " %T%#StatusLine#"]],
 }
 
 function main.add_vim_expr(expr)
@@ -297,39 +298,38 @@ end
 
 local default = {
   items = {
-    main.blocks.MODE,
-    main.blocks.FILE,
-    main.blocks.LSP_INFO,
-    main.add_vim_expr("%="),
-    main.blocks.GIT_INFO,
-    main.blocks.CURSOR_POS,
-    main.blocks.FILE_TYPE,
-    main.blocks.FILE_ENCODING,
-    main.blocks.CWD,
-    main.add_lua_fn(function(_)
-      local win = require("plenary.popup").create("", {
-        title = "New CWD",
-        style = "minimal",
-        borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-        borderhighlight = "pathBr",
-        titlehighlight = "pathToGo",
-        focusable = true,
-        width = 50,
-        height = 1,
-      })
+    left = { main.blocks.MODE, main.blocks.FILE, main.blocks.LSP_INFO },
+    right = {
+      main.blocks.GIT_INFO,
+      main.blocks.CURSOR_POS,
+      main.blocks.FILE_TYPE,
+      main.blocks.FILE_ENCODING,
+      main.blocks.CWD,
+      main.add_lua_fn(function(_)
+        local win = require("plenary.popup").create("", {
+          title = "New CWD",
+          style = "minimal",
+          borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+          borderhighlight = "pathBr",
+          titlehighlight = "pathToGo",
+          focusable = true,
+          width = 50,
+          height = 1,
+        })
 
-      vim.cmd("normal A")
-      vim.cmd("startinsert")
+        vim.cmd("normal A")
+        vim.cmd("startinsert")
 
-      vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
+        vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
 
-      vim.keymap.set({ "i", "n" }, "<CR>", function()
-        local new = vim.trim(vim.fn.getline("."))
-        vim.api.nvim_win_close(win, true)
-        vim.cmd.stopinsert()
-        vim.fn.chdir(new)
-      end, { buffer = 0 })
-    end),
+        vim.keymap.set({ "i", "n" }, "<CR>", function()
+          local new = vim.trim(vim.fn.getline("."))
+          vim.api.nvim_win_close(win, true)
+          vim.cmd.stopinsert()
+          vim.fn.chdir(new)
+        end, { buffer = 0 })
+      end),
+    },
   },
   colors = {
     blocks = {
@@ -369,6 +369,10 @@ local default = {
   },
 }
 
+local aeettrs = [[
+  bar[#bar + 1] = "%="
+]]
+
 function main.setup(opts)
   if opts ~= nil then
     opts = vim.tbl_deep_extend("force", opts, default)
@@ -377,14 +381,20 @@ function main.setup(opts)
   end
   vim.api.nvim_command("hi StatusLine guibg=" .. opts.colors.bg)
 
-  for i, v in ipairs(opts.items) do
+  for i, v in ipairs(opts.items.left) do
     local color = opts.colors.blocks[string.lower(v)]
-    if color ~= nil then opts.items[i] = str.format(blocks[v], color) end
+    if color ~= nil then opts.items.left[i] = str.format(blocks[v], color) end
+  end
+  for i, v in ipairs(opts.items.right) do
+    local color = opts.colors.blocks[string.lower(v)]
+    if color ~= nil then opts.items.right[i] = str.format(blocks[v], color) end
   end
 
-  local header_fmtd = str.format(HEADER, opts.separators)
-
-  local fcont = header_fmtd .. table.concat(opts.items, "") .. FOOTER
+  local fcont = str.format(HEADER, opts.separators)
+    .. table.concat(opts.items.left, "\n")
+    .. aeettrs -- Align everything else to the right side.
+    .. table.concat(opts.items.right, "\n")
+    .. FOOTER
   uts.str_to_file(fcont, path.join(uts.fwd(false), "vibib_filled.lua"))
   return main
 end
