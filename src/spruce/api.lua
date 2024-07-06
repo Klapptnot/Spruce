@@ -188,14 +188,14 @@ function main.resize_win_interact()
     -- stylua: ignore
     local _ = match(string.char(ch), true)({
       -- uppercase 73-76
-      I = main.vert_incsize,
-      J = main.horiz_decsize,
-      K = main.vert_decsize,
+      H = main.horiz_decsize,
+      J = main.vert_decsize,
+      K = main.vert_incsize,
       L = main.horiz_incsize,
       -- lowercase 105-108
-      i = main.vert_incsize,
-      j = main.horiz_decsize,
-      k = main.vert_decsize,
+      h = main.horiz_decsize,
+      j = main.vert_decsize,
+      k = main.vert_incsize,
       l = main.horiz_incsize,
     })
     vim.api.nvim_command("redraw")
