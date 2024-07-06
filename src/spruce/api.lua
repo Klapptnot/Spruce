@@ -175,8 +175,11 @@ function main.resize_win_interact()
     if
       not ok
       or type(ch) ~= "number"
-      -- Upper or lower case i j k l
-      or not ((ch > 72 and ch < 77) or (ch > 104 and ch < 109))
+      -- Upper or lower case h i j k l
+      or not ((ch > 71 and ch < 77) or (ch > 103 and ch < 109))
+      -- But i does not do the same
+      or ch == 73
+      or ch == 105
     then
       vim.api.nvim_notify(
         "Interactive window resizing done",
