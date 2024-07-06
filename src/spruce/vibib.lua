@@ -183,22 +183,22 @@ local blocks = {
     end
 
     bar[#bar + 1] =
-      string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
+      string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} ", icon, file)
   end]],
 
   file_type = [[
   do
     local type = str.fallback(vim.bo[sbuf].filetype, "unknown")
-    bar[#bar + 1] = "%#Vibiv_file_type# " .. type .. " %#StatusLine#"
+    bar[#bar + 1] = "%#Vibiv_file_type# " .. type .. " "
   end]],
 
   file_eol = [[
   do
     local eol = vim.bo[sbuf].fileformat
     if eol == "unix" then
-      bar[#bar + 1] = "%#Vibib_file_eol# LF %#StatusLine#"
+      bar[#bar + 1] = "%#Vibib_file_eol# LF "
     else
-      bar[#bar + 1] = "%#Vibib_file_eol# CRLF %#StatusLine#"
+      bar[#bar + 1] = "%#Vibib_file_eol# CRLF "
     end
   end]],
 
@@ -206,30 +206,30 @@ local blocks = {
   do
     local enc = vim.bo[sbuf].fileencoding
     if enc ~= "" then
-      bar[#bar + 1] = "%#Vibib_file_encoding# " .. enc .. " %#StatusLine#"
+      bar[#bar + 1] = "%#Vibib_file_encoding# " .. enc .. " "
     end
   end]],
 
-  cursor_pos = [[  bar[#bar + 1] = "%#Vibib_cursor_pos# (%p%%) Ch:Ln/Tl %c:%l/%L => [%b][0x%B] %#StatusLine#"]],
+  cursor_pos = [[  bar[#bar + 1] = "%#Vibib_cursor_pos# (%p%%) Ch:Ln/Tl %c:%l/%L => [%b][0x%B] "]],
 
   git_info = [[
   do
     if igit then
       local gst = vim.b[sbuf].gitsigns_status_dict
-      bar[#bar + 1] = string.format(
-        "%%#Vibib_git_info_branch# %s %%#StatusLine#",
-        vim.b[sbuf].gitsigns_status_dict.head
-      )
       gst = {
         gst.added,
         gst.changed,
         gst.removed,
       }
       local mod = { "", "", "" }
-      if gst[1] and gst[1] > 0 then mod[1] = "%#Vibib_git_info_added#  " .. gst[1] end
-      if gst[2] and gst[2] > 0 then mod[2] = "%#Vibib_git_info_changed#  " .. gst[2] end
-      if gst[3] and gst[3] > 0 then mod[3] = "%#Vibib_git_info_removed#  " .. gst[3] end
-      bar[#bar + 1] = table.concat(mod, "") .. "%#StatusLine#"
+      if gst[1] and gst[1] > 0 then mod[1] = "%#Vibib_git_info_addedF#  " .. gst[1] end
+      if gst[2] and gst[2] > 0 then mod[2] = "%#Vibib_git_info_changedF#  " .. gst[2] end
+      if gst[3] and gst[3] > 0 then mod[3] = "%#Vibib_git_info_removedF#  " .. gst[3] end
+      bar[#bar + 1] = string.format(
+        "%s %%#Vibib_git_info_branch#  %s ",
+        table.concat(mod, ""),
+        vim.b[sbuf].gitsigns_status_dict.head
+      )
     end
   end]],
 
@@ -238,7 +238,7 @@ local blocks = {
     if rawget(vim, "lsp") ~= nil then
       for _, lsp in ipairs(vim.lsp.get_active_clients()) do
         if lsp.name ~= "null-ls" and lsp.attached_buffers[sbuf] ~= nil then
-          bar[#bar + 1] = "%#Vibib_lsp_info_name#   " .. lsp.name .. " %#StatusLine#"
+          bar[#bar + 1] = "%#Vibib_lsp_info_name#   " .. lsp.name .. " "
           break
         end
       end
@@ -249,18 +249,18 @@ local blocks = {
         #vim.diagnostic.get(sbuf, { severity = vim.diagnostic.severity.ERROR }),
       }
       local stats = { "", "", "", "" } --        
-      if stat[1] and stat[1] > 0 then stats[1] = "%#Vibib_lsp_info_info#  " .. stat[1] end
-      if stat[2] and stat[2] > 0 then stats[2] = "%#Vibib_lsp_info_hint#  " .. stat[2] end
-      if stat[3] and stat[3] > 0 then stats[3] = "%#Vibib_lsp_info_warn#  " .. stat[3] end
-      if stat[4] and stat[4] > 0 then stats[4] = "%#Vibib_lsp_info_error#  " .. stat[4] end
-      bar[#bar + 1] = table.concat(stats, "") .. " %#StatusLine#"
+      if stat[1] and stat[1] > 0 then stats[1] = "%#Vibib_lsp_info_infoF#  " .. stat[1] end
+      if stat[2] and stat[2] > 0 then stats[2] = "%#Vibib_lsp_info_hintF#  " .. stat[2] end
+      if stat[3] and stat[3] > 0 then stats[3] = "%#Vibib_lsp_info_warnF#  " .. stat[3] end
+      if stat[4] and stat[4] > 0 then stats[4] = "%#Vibib_lsp_info_errorF#  " .. stat[4] end
+      bar[#bar + 1] = table.concat(stats, "") .. " "
     end
   end]],
 
   cwd = [[
   bar[#bar + 1] = "%#Vibib_cwd# 󰉖 "
     .. str.fallback(path.basename(vim.fn.getcwd()), "")
-    .. " %#StatusLine#"]],
+    .. " "]],
 }
 
 function main.add_vim_expr(expr)
@@ -339,22 +339,22 @@ local default = {
   colors = {
     blocks = {
       mode          = {
-        normal  = "#fdc5f5", -- Yogurt
-        insert  = "#6cffb8", -- Mint green
-        visual  = "#6ce8ff", -- Cyan
-        prompt  = "#801de6", -- Purple
-        replace = "#fd65c5", -- Pink
-        other   = "#b8966c", -- Ocre
+        normal  = "#fdc5f5",     -- Yogurt
+        insert  = "#6cffb8",     -- Mint green
+        visual  = "#6ce8ff",     -- Cyan
+        prompt  = "#801de6",     -- Purple
+        replace = "#fd65c5",     -- Pink
+        other   = "#b8966c",     -- Ocre
       },
       cwd           = "#bd93f9", -- Mauve
       file          = "#e188a4", -- Dusty rose
       file_type     = "#ffe8b8", -- Beige
       lsp_info      = {
-        name  = "#fdc5c5",   -- Skin
-        error = "#ff6e6e",   -- Red
-        hint  = "#6c8cff",   -- Blue
-        warn  = "#ffb86c",   -- Orange
-        info  = "#a020f0",   -- Candy Purple
+        name  = "#fdc5c5",       -- Skin
+        error = "#ff6e6e",       -- Red
+        hint  = "#6c8cff",       -- Blue
+        warn  = "#ffb86c",       -- Orange
+        info  = "#a020f0",       -- Candy Purple
       },
       git_info      = {
         branch  = "#674533",     -- Dark brown
@@ -374,14 +374,16 @@ local default = {
   },
 }
 
-local aeettrs = '\n  bar[#bar + 1] = "%="\n'
+local aeettrs = '\n  bar[#bar + 1] = "%#StatusLine#%="\n'
 
 local function generate_hi(t, f)
   for n, c in pairs(t) do
     if color.brightness(c, 0.35) then
       vim.api.nvim_set_hl(0, f .. n, { bg = c, fg = "#101010", bold = true })
+      vim.api.nvim_set_hl(0, f .. n .. "F", { fg = c, bold = true })
     else
       vim.api.nvim_set_hl(0, f .. n, { bg = c, fg = "#fafaff", bold = true })
+      vim.api.nvim_set_hl(0, f .. n .. "F", { fg = c, bold = true })
     end
   end
 end
