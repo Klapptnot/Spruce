@@ -217,7 +217,7 @@ local blocks = {
     if igit then
       local gst = vim.b[sbuf].gitsigns_status_dict
       bar[#bar + 1] = string.format(
-        "%%#Vibib_git_branch# %s %%#StatusLine#",
+        "%%#Vibib_git_info_branch# %s %%#StatusLine#",
         vim.b[sbuf].gitsigns_status_dict.head
       )
       gst = {
@@ -226,9 +226,9 @@ local blocks = {
         gst.removed,
       }
       local mod = { "", "", "" }
-      if gst[1] and gst[1] > 0 then mod[1] = "%#Vibib_git_added#  " .. gst[1] end
-      if gst[2] and gst[2] > 0 then mod[2] = "%#Vibib_git_changed#  " .. gst[2] end
-      if gst[3] and gst[3] > 0 then mod[3] = "%#Vibib_git_removed#  " .. gst[3] end
+      if gst[1] and gst[1] > 0 then mod[1] = "%#Vibib_git_info_added#  " .. gst[1] end
+      if gst[2] and gst[2] > 0 then mod[2] = "%#Vibib_git_info_changed#  " .. gst[2] end
+      if gst[3] and gst[3] > 0 then mod[3] = "%#Vibib_git_info_removed#  " .. gst[3] end
       bar[#bar + 1] = table.concat(mod, "") .. "%#StatusLine#"
     end
   end]],
@@ -238,7 +238,7 @@ local blocks = {
     if rawget(vim, "lsp") ~= nil then
       for _, lsp in ipairs(vim.lsp.get_active_clients()) do
         if lsp.name ~= "null-ls" and lsp.attached_buffers[sbuf] ~= nil then
-          bar[#bar + 1] = "%#Vibib_lsp_name#   " .. lsp.name .. " %#StatusLine#"
+          bar[#bar + 1] = "%#Vibib_lsp_info_name#   " .. lsp.name .. " %#StatusLine#"
           break
         end
       end
@@ -249,10 +249,10 @@ local blocks = {
         #vim.diagnostic.get(sbuf, { severity = vim.diagnostic.severity.ERROR }),
       }
       local stats = { "", "", "", "" } --        
-      if stat[1] and stat[1] > 0 then stats[1] = "%#Vibib_lsp_info#  " .. stat[1] end
-      if stat[2] and stat[2] > 0 then stats[2] = "%#Vibib_lsp_hint#  " .. stat[2] end
-      if stat[3] and stat[3] > 0 then stats[3] = "%#Vibib_lsp_warn#  " .. stat[3] end
-      if stat[4] and stat[4] > 0 then stats[4] = "%#Vibib_lsp_error#  " .. stat[4] end
+      if stat[1] and stat[1] > 0 then stats[1] = "%#Vibib_lsp_info_info#  " .. stat[1] end
+      if stat[2] and stat[2] > 0 then stats[2] = "%#Vibib_lsp_info_hint#  " .. stat[2] end
+      if stat[3] and stat[3] > 0 then stats[3] = "%#Vibib_lsp_info_warn#  " .. stat[3] end
+      if stat[4] and stat[4] > 0 then stats[4] = "%#Vibib_lsp_info_error#  " .. stat[4] end
       bar[#bar + 1] = table.concat(stats, "") .. " %#StatusLine#"
     end
   end]],
