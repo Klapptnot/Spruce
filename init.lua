@@ -16,9 +16,6 @@ do -- Add config folder to package.path
     .. p.d .. nvcfg .. p.s .. p.p .. ".lua"
 end
 
--- Run tweaks on nvim & lua behavior
-require("src.spruce.tweaks").apply({ "lua_functions", "reset_cursor", "detect_indent" })
-
 -- Initialize things that needs to be downloaded, like lazy
 require("src.bootstrap") -- This creates the `custom` folder and init.lua
 
@@ -35,3 +32,6 @@ config.mapping():no_op_key("<C-z>") -- disable backgrounding when <C-z> is press
 
 -- Load spruce files
 require("src.spruce")
+
+-- Run tweaks on nvim & lua behavior
+require("src.spruce.tweaks").apply({ "lua_functions", "reset_cursor", "detect_indent" })

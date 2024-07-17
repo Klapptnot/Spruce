@@ -10,7 +10,7 @@ local tweaks_fns = {
   detect_indent = function()
     local function guess_set_indent(opts)
       local a, b, c = vim.bo.shiftwidth, vim.bo.tabstop, vim.bo.softtabstop
-      local indent = require("src.furnace.gindent")
+      local indent = require("furnace.gindent")
       local width = indent.guess()
       if width == nil then width = 2 end
       vim.bo.shiftwidth = width

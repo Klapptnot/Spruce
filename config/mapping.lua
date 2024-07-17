@@ -83,7 +83,7 @@ function main:apply()
     for _, mode in ipairs(props.mode) do
       local remove = rcall(vim.api.nvim_set_keymap, mode, props.mapp, props.exec, props.opts)
       if not remove() then
-        fmt("Mapping error for '{}': {}", tostring(props.desc), remove.unwrap(true)):print()
+        print(fmt("Mapping error for '{}': {}", tostring(props.desc), remove.unwrap(true)))
       end
     end
   end
