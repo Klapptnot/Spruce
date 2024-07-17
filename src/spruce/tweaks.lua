@@ -8,19 +8,22 @@ SPRUCE_TWEAKS = {
 
 local tweaks_fns = {
   detect_indent = function()
-    local function guess_set_indent(opts)
+    local function guess_set_indent()
       local a, b, c = vim.bo.shiftwidth, vim.bo.tabstop, vim.bo.softtabstop
-      local indent = require("furnace.gindent")
+      local ok, indent = pcall(require, "furnace.gindent")
+      if not ok then
+        vim.notify("warm.lua plugin not available", vim.log.levels.ERROR, {})
+        return
+      end
       local width = indent.guess()
       if width == nil then width = 2 end
       vim.bo.shiftwidth = width
       vim.bo.tabstop = width
       vim.bo.softtabstop = width
 
-      if #opts.fargs > 0 then return end
       print(
         string.format(
-          "{ before = { shiftwidth = %d, tabstop = %d, softtabstop = %d }, after = %d }",
+          "guess = { before = { shiftwidth = %d, tabstop = %d, softtabstop = %d }, after = %d }",
           a,
           b,
           c,
@@ -33,11 +36,11 @@ local tweaks_fns = {
     vim.api.nvim_create_user_command(
       "SpruceGuessIndent",
       guess_set_indent,
-      { nargs = "+", desc = "Guess and set indent level [def: 2]" }
+      { desc = "Guess and set indent level [def: 2]" }
     )
-    vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter" }, {
+    vim.api.nvim_create_autocmd({ "BufReadPost" }, {
       pattern = "*",
-      command = "SpruceGuessIndent _",
+      command = "SpruceGuessIndent",
     })
     SPRUCE_TWEAKS.detect_indent = true
   end,
