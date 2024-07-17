@@ -2,7 +2,7 @@
 -- & It would be sad to run this :(
 
 local function uninstall_spruce(all)
-  local Result = require("src.warm.spruce").Result
+  local fcall = require("warm.spr").fcall
 
   local folders = {
     vim.fn.stdpath("config"),
@@ -12,12 +12,14 @@ local function uninstall_spruce(all)
     table.insert(folders, vim.fn.stdpath("cache"))
   end
 
+  local function f(rv, ...)
+    local args = { ... }
+    print("Error removing folder:", args[1])
+    print("Error message:", rv[1])
+  end
+
   for _, folder in ipairs(folders) do
-    local remove = Result(vim.fn.delete, folder, "rf")
-    if not remove() then
-      print("Error removing folder:", folder)
-      print("Error message:", remove.unwrap_err())
-    end
+    local _ = fcall(f, vim.fn.delete, folder, "rf")
   end
 end
 

@@ -1,6 +1,6 @@
 -- Small regex engine, when patterns are not enough
 
-local spr = require("src.warm.spruce")
+local spr = require("warm.spr")
 -- stylua: ignore start
 
 local TokenRange = {

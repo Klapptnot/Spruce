@@ -1,4 +1,7 @@
 local __plugins__ = {
+  -- Stricly necessary dependencies for Spruce
+  ["klapptnot/warm.lua"] = {},
+
   --#region Dependencies of a lot of plugins
   ["nvim-tree/nvim-web-devicons"] = {},
   ["nvim-lua/plenary.nvim"] = {},

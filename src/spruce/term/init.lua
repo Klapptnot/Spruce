@@ -24,7 +24,7 @@ main.opts = {
   send_keys = true, -- Send all pressed keys to terminal window
 }
 
-local tbl = require("src.warm.table")
+local tbl = require("warm.table")
 
 -- Main terminal object
 function main.setup(opts)

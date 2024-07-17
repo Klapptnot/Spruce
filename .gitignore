@@ -4,7 +4,9 @@
 **/._*
 
 .vscode/
-nightly/
+stable/
 runtime/
 custom/
 test/
+doc/tags
+lazy-lock.json

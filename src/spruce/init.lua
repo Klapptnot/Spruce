@@ -15,7 +15,7 @@ require("src.spruce.themes").load()            -- Add spruce themes command
 
 require("src.spruce.vibib").setup().load(true) -- Enable statusline plugin
 
-local tbmerge = require("src.warm.table").merge
+local tbmerge = require("warm.table").merge
 
 -- I was about to use this, but was easy to use my own (is not what I wanted)
 -- https://gist.github.com/kawarimidoll/302b03fc6e9300786f54cfafb9150fe3

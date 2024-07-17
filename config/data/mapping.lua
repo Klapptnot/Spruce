@@ -3,6 +3,9 @@ local api = require("src.spruce.api")
 local __def_opts_lua__ = { expr = false }
 local __def_opts_vim__ = { silent = true }
 
+---@alias SpruceKeyMapp {mapp:string, mode:string[], exec:fun()|string, desc:string?, opts:table<string, any>?}
+
+---@type SpruceKeyMapp
 local __map__ = {
   -- ^ Lua functions
   {

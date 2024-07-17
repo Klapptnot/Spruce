@@ -8,9 +8,10 @@ local __map__ = require("config.data.mapping")
 local main = {}
 
 ---Return a new instance of mapping table
----@param tbl? table
+---@param tbl? SpruceKeyMapp[]
 ---@return NvimMappingConfig
 function main:new(tbl)
+  ---@type SpruceKeyMapp[]
   self = tbl or __map__
   setmetatable(self, { __index = main })
   return self
@@ -67,21 +68,22 @@ function main:add(id, props)
   return self
 end
 
-local Result = require("src.warm.spruce").Result
-local fmt = require("src.warm.str").format
-
 ---Apply all mappings to nvim
 function main:apply()
+  local rcall = require("warm.spr").rcall
+  local fmt = require("warm.str").format
+
   for _, props in pairs(self) do
+    ---@cast props SpruceKeyMapp
     if type(props.exec) == "function" then
       props.opts.callback = props.exec
       props.exec = ""
     end
     props.opts.desc = props.desc -- Just to not nest items
     for _, mode in ipairs(props.mode) do
-      local r = Result(vim.api.nvim_set_keymap, mode, props.mapp, props.exec, props.opts)
-      if not r() then
-        fmt("Mapping error for '{}': {}", tostring(props.desc), r.unwrap_err()):print()
+      local remove = rcall(vim.api.nvim_set_keymap, mode, props.mapp, props.exec, props.opts)
+      if not remove() then
+        fmt("Mapping error for '{}': {}", tostring(props.desc), remove.unwrap(true)):print()
       end
     end
   end

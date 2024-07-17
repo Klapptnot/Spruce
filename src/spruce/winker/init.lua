@@ -1,7 +1,7 @@
 -- && Spruce winker (window picker)
 
 local fl = require("src.spruce.winker.font")
-local utf8 = require("src.warm.utf8")
+local utf8 = require("warm.utf8")
 
 local drawer = {
   font = "ansi-regular",
@@ -62,7 +62,7 @@ function drawer:spawn_floating_hint(wininfo)
   lines[1] = fill
   lines[#lines] = fill
 
-  -- local fmt = require("src.warm.str").format
+  -- local fmt = require("warm.str").format
   for i = 1, win.h - 2 do
     local bigchln = bigchar[i]
     -- if bigchln:sub(-1, -1) == " " then bigchln = bigchln:sub(1, -2) end

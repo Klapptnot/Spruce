@@ -26,12 +26,12 @@ local config = require("config")
 ---@type table<string, table<any, any>>
 local custom = require("custom")
 
-config.mapping:no_op_key("<C-z>") -- disable backgrounding when <C-z> is pressed
+config.plugins():merge(custom.plugins):apply()
+config.globals():merge(custom.globals):apply()
+config.mapping():merge(custom.mapping):apply()
+config.options():merge(custom.options):apply()
 
-config.globals:merge(custom.globals):apply()
-config.mapping:merge(custom.mapping):apply()
-config.options:merge(custom.options):apply()
-config.plugins:merge(custom.plugins):apply()
+config.mapping():no_op_key("<C-z>") -- disable backgrounding when <C-z> is pressed
 
 -- Load spruce files
 require("src.spruce")

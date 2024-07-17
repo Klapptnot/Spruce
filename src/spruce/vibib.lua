@@ -2,10 +2,12 @@
 
 local main = {}
 
-local color = require("src.warm.color")
-local path = require("src.warm.path")
-local str = require("src.warm.str")
-local uts = require("src.warm.uts")
+local color = require("warm.color")
+local path = require("warm.path")
+local str = require("warm.str")
+local uts = require("warm.uts")
+
+local SPRUCE_VIBIB_CACHE = path.join(SPRUCE_CACHE, "vibib.lua")
 
 SPRUCE = {
   vibib = {
@@ -65,8 +67,8 @@ end
 -- }
 
 local HEADER = [[
-local path = require("src.warm.path")
-local str = require("src.warm.str")
+local path = require("warm.path")
+local str = require("warm.str")
 
 return function ()
   local modi = str.fallback(vim.api.nvim_get_mode().mode, "sp")
@@ -91,7 +93,7 @@ return function ()
 
   local bar = {{}}
 ]]
-local FOOTER = '\n  return table.concat(bar, " ")\nend\n'
+local FOOTER = '\n  return table.concat(bar, "")\nend\n'
 
 ---@enum
 -- stylua: ignore
@@ -183,13 +185,13 @@ local blocks = {
     end
 
     bar[#bar + 1] =
-      string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} ", icon, file)
+      string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
   end]],
 
   file_type = [[
   do
     local type = str.fallback(vim.bo[sbuf].filetype, "unknown")
-    bar[#bar + 1] = "%#Vibiv_file_type# " .. type .. " "
+    bar[#bar + 1] = "%#Vibib_file_type# " .. type .. " "
   end]],
 
   file_eol = [[
@@ -236,7 +238,7 @@ local blocks = {
   lsp_info = [[
   do
     if rawget(vim, "lsp") ~= nil then
-      for _, lsp in ipairs(vim.lsp.get_active_clients()) do
+      for _, lsp in ipairs(vim.lsp.get_clients({bufnr=sbuf})) do
         if lsp.name ~= "null-ls" and lsp.attached_buffers[sbuf] ~= nil then
           bar[#bar + 1] = "%#Vibib_lsp_info_name#   " .. lsp.name .. " "
           break
@@ -283,9 +285,14 @@ function main.add_lua_fn(fn)
 end
 
 function main.load(enable)
+  local fun, _ = loadfile(SPRUCE_VIBIB_CACHE, "b")
+  assert(fun ~= nil, "Could not load statusline file")
+
+  VibibStln = fun()
+
   main.__enabled = false
   if enable == true then
-    vim.opt.statusline = "%!v:lua.require('src.spruce.vibib_filled')()"
+    vim.opt.statusline = "%!v:lua.VibibStln()"
     main.__enabled = true
   end
   vim.api.nvim_create_user_command("VibibToggle", function()
@@ -293,7 +300,7 @@ function main.load(enable)
       vim.opt.statusline = ""
       main.__enabled = false
     else
-      vim.opt.statusline = "%!v:lua.require('src.spruce.vibib_filled')()"
+      vim.opt.statusline = "%!v:lua.VibibStln()"
       main.__enabled = true
     end
   end, {})
@@ -366,7 +373,7 @@ local default = {
       file_eol      = "#f5f5ff", -- White
       file_encoding = "#ffa98c", -- Peach
     },
-    bg = "#101010",
+    bg = "none",
   },
   separators = {
     lis = "",
@@ -426,7 +433,7 @@ function main.setup(opts)
     .. aeettrs -- Align everything else to the right side.
     .. table.concat(opts.items.right, "\n")
     .. FOOTER
-  uts.str_to_file(fcont, path.join(uts.fwd(false), "vibib_filled.lua"))
+  uts.str_to_file(fcont, SPRUCE_VIBIB_CACHE)
   return main
 end
 

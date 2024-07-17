@@ -2,9 +2,9 @@
 -- !! Supports .flf fonts, commonly figlet fonts
 
 -- `fwd` File Work Directory
-local path = require("src.warm.path")
-local str = require("src.warm.str")
-local uts = require("src.warm.uts")
+local path = require("warm.path")
+local str = require("warm.str")
+local uts = require("warm.uts")
 
 ---@alias flffont.char { s:string, l:string[], c:string } Font character, [s]tring and [l]lines with [c]har to know which character is
 

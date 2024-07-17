@@ -1,10 +1,10 @@
 -- && Config loader for Spruce
 
 local main = {
-  globals = require("config.globals"):new(),
-  mapping = require("config.mapping"):new(),
-  options = require("config.options"):new(),
-  plugins = require("config.plugins"):new(),
+  globals = function() return require("config.globals"):new() end,
+  mapping = function() return require("config.mapping"):new() end,
+  options = function() return require("config.options"):new() end,
+  plugins = function() return require("config.plugins"):new() end,
 } -- Return all configs classes
 
 return main

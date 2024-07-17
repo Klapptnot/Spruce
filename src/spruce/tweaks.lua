@@ -8,21 +8,37 @@ SPRUCE_TWEAKS = {
 
 local tweaks_fns = {
   detect_indent = function()
-    local function guess_set_indent()
+    local function guess_set_indent(opts)
+      local a, b, c = vim.bo.shiftwidth, vim.bo.tabstop, vim.bo.softtabstop
       local indent = require("src.furnace.gindent")
       local width = indent.guess()
-      if width == nil then return end
+      if width == nil then width = 2 end
       vim.bo.shiftwidth = width
       vim.bo.tabstop = width
       vim.bo.softtabstop = width
+
+      if #opts.fargs > 0 then return end
+      print(
+        string.format(
+          "{ before = { shiftwidth = %d, tabstop = %d, softtabstop = %d }, after = %d }",
+          a,
+          b,
+          c,
+          width
+        )
+      )
     end
 
     -- Set indentation based on guesses, works better btw
-    vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter", "BufEnter" }, {
+    vim.api.nvim_create_user_command(
+      "SpruceGuessIndent",
+      guess_set_indent,
+      { nargs = "+", desc = "Guess and set indent level [def: 2]" }
+    )
+    vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter" }, {
       pattern = "*",
-      command = "SpruceGuessIndent",
+      command = "SpruceGuessIndent _",
     })
-    vim.api.nvim_create_user_command("SpruceGuessIndent", guess_set_indent, {})
     SPRUCE_TWEAKS.detect_indent = true
   end,
   reset_cursor = function()

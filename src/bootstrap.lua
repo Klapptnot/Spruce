@@ -1,9 +1,7 @@
-local path = require("src.warm.path")
-
 -- Set lazy as it appears in GitHub
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "lazy.nvim")
 -- Clone repo if lazy is not found
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
@@ -19,7 +17,7 @@ vim.opt.rtp:prepend(lazypath)
 local function createCustomFolder(cusfol)
   -- Create user custom configurations folder
   vim.fn.mkdir(cusfol, "p")
-  local ifile = io.open(path.join(cusfol, "init.lua"), "w")
+  local ifile = io.open(vim.fs.joinpath(cusfol, "init.lua"), "w")
   if ifile == nil then return end
   ifile:write([[
 -- & Here is where your customization loads
@@ -58,9 +56,9 @@ return {
   ifile:close()
 end
 
-local cusfol = path.join(vim.fn.stdpath("config"), "custom")
-if not path.exists(cusfol) then createCustomFolder(cusfol) end
+local cusfol = vim.fs.joinpath(vim.fn.stdpath("config"), "custom")
+if not vim.uv.fs_stat(cusfol) then createCustomFolder(cusfol) end
 
 SPRUCE = {}
-SPRUCE_CACHE = path.join(vim.fn.stdpath("cache"), "spruce")
-if not path.exists(SPRUCE_CACHE) then vim.fn.mkdir(SPRUCE_CACHE, "p") end
+SPRUCE_CACHE = vim.fs.joinpath(vim.fn.stdpath("cache"), "spruce")
+if not vim.uv.fs_stat(SPRUCE_CACHE) then vim.fn.mkdir(SPRUCE_CACHE, "p") end

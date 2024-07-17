@@ -2,8 +2,8 @@
 -- & Useful to set mappings
 
 local main = {}
-local str = require("src.warm.str")
-local match = require("src.warm.spruce").match
+local str = require("warm.str")
+local match = require("warm.spr").match
 
 ---Returns whether the current mode is visual mode or not
 ---@return boolean

@@ -1,7 +1,7 @@
 local main = {}
 local fns = {
   on_attach = function(client, bufnr)
-    -- local fmt = require("src.warm.str").format
+    -- local fmt = require("warm.str").format
     local mapps = require("config.data.for.lspconfig.mapping")
     for meth, prop in pairs(mapps) do
       if client.supports_method(meth) then
@@ -11,6 +11,7 @@ local fns = {
           prop.exec = ""
         end
         for _, mode in ipairs(prop.mode) do
+          ---@diagnostic disable-next-line: param-type-mismatch
           vim.api.nvim_buf_set_keymap(bufnr, mode, prop.mapp, prop.exec, prop.opts)
         end
       end

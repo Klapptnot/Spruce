@@ -1,10 +1,10 @@
 local main = {}
 
-local path = require("src.warm.path")
-local str = require("src.warm.str")
-local tbl = require("src.warm.table")
+local path = require("warm.path")
+local str = require("warm.str")
+local tbl = require("warm.table")
 local util = require("src.spruce.themes.util")
-local uts = require("src.warm.uts")
+local uts = require("warm.uts")
 -- Location to *this* file folder
 local meloc = uts.fwd()
 ---@cast meloc string

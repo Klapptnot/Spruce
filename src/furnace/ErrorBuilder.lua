@@ -1,5 +1,5 @@
-local uts = require("src.warm.uts")
-local fmt = require("src.warm.str").format
+local uts = require("warm.uts")
+local fmt = require("warm.str").format
 
 ---@class ErrorBuilder: table
 local ErrorBuilder = {}
