@@ -83,11 +83,12 @@ function drawer:spawn_floating_hint(wininfo)
   local window_id = vim.api.nvim_open_win(buf_id, false, {
     relative = "win",
     win = pwinid,
-    focusable = true,
+    focusable = false,
     row = pos.y,
     col = pos.x,
     width = win.w,
     height = win.h,
+    noautocmd = true,
     style = "minimal",
     -- border = {
     --   { "╭", "FloatBorder" },

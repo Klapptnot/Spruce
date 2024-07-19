@@ -21,14 +21,17 @@ local tweaks_fns = {
       vim.bo.tabstop = width
       vim.bo.softtabstop = width
 
-      print(
+      if a == width then return end
+      vim.notify(
         string.format(
-          "guess = { before = { shiftwidth = %d, tabstop = %d, softtabstop = %d }, after = %d }",
+          "Indentation size changed\n{\n  before = { shiftwidth = %d, tabstop = %d, softtabstop = %d },\n  after = %d\n}",
           a,
           b,
           c,
           width
-        )
+        ),
+        vim.log.levels.INFO,
+        { title = "Tweaks" }
       )
     end
 
@@ -67,11 +70,14 @@ local tweaks_fns = {
     -- local valid_types = "string,number"
     -- assert(valid_types:has(type(v)), 'argument #1 must be either string or number')
     -- ```
-    ---@param s string
-    ---@param str string
+    ---@param s string|number
+    ---@param str string|number
+    ---@param init? integer
     ---@return boolean
-    string.has = function(s, str)
-      return s:find(str:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1")) ~= nil
+    string.has = function(s, str, init)
+      if init == nil then init = 1 end
+      assert(type(init) == "number", "argument #1 must be a number")
+      return string.find(s, str, 1, true) ~= nil
     end
 
     ---Print string to `stdout`.

@@ -22,15 +22,23 @@ end
 ---@return NvimMappingConfig
 function main:merge(tbl) return self:new(vim.tbl_deep_extend("force", self, tbl)) end
 
----Make `mapp` a non-op in the most common modes
----@param mapp string
+---Make all mappings on `mapps` non-op in the most common modes
+---@param mapps string[]
 ---@return NvimMappingConfig
-function main:no_op_key(mapp)
-  if mapp == nil then return self end
-  local modes = { "n", "v", "i", "t", "x", "s", "o", "c", "!", "l" }
+function main:no_op_key(mapps)
+  if mapps == nil then return self end
   local opts = { noremap = false, silent = true }
-  for _, mode in ipairs(modes) do
-    vim.keymap.set(mode, mapp, "<NOP>", opts)
+  for _, mapp in ipairs(mapps) do
+    vim.keymap.set("n", mapp, "<NOP>", opts)
+    vim.keymap.set("v", mapp, "<NOP>", opts)
+    vim.keymap.set("i", mapp, "<NOP>", opts)
+    vim.keymap.set("t", mapp, "<NOP>", opts)
+    vim.keymap.set("x", mapp, "<NOP>", opts)
+    vim.keymap.set("s", mapp, "<NOP>", opts)
+    vim.keymap.set("o", mapp, "<NOP>", opts)
+    vim.keymap.set("c", mapp, "<NOP>", opts)
+    vim.keymap.set("!", mapp, "<NOP>", opts)
+    vim.keymap.set("l", mapp, "<NOP>", opts)
   end
   return self
 end
@@ -53,9 +61,7 @@ function main:disable_mouse()
     "<ScrollWheelLeft>",
     "<ScrollWheelRight>",
   }
-  for _, v in ipairs(mouse_events) do
-    self:no_op_key(v)
-  end
+  self:no_op_key(mouse_events)
   return self
 end
 

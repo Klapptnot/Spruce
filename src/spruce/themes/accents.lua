@@ -7,7 +7,7 @@ local colmt = {
   __index = function(t, k)
     if k == "name" then return t[1] end
     if k == "code" then return t[1]:lower():gsub(" ", "_") end
-    if k == "hgrp" then return t[1]:gsub(" (.)", string.upper) end
+    if k == "hgrp" then return "AccHi" .. t[1]:gsub(" (.)", string.upper) end
     if k == "color" then return t[2] end
   end,
 }
