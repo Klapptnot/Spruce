@@ -30,27 +30,15 @@ function main:add(id, props)
   return self
 end
 
----Return the table of plugins as lazy.nvim requires.
----@param self table
+---Return the table of plugins with no metatable
 ---@return table
-function main:getlazy() --, parse)
-  -- local parse = (parse ~= nil or parse == true) or false
-  -- if not parse then
-  --   return self.__all__
-  -- end
-  local parsed = {}
-  for k, v in pairs(self) do
-    v[1] = k
-    table.insert(parsed, v)
-  end
-  return parsed
-end
+function main:raw() return setmetatable(self, nil) end
 
 ---Install all plugins using lazy.nvim
 ---@param lazy_cfg? table
 function main:apply(lazy_cfg)
   lazy_cfg = (lazy_cfg ~= nil and type(lazy_cfg) == "table") and lazy_cfg or {}
-  require("lazy").setup(self:getlazy(), lazy_cfg)
+  require("lazy").setup(self:raw(), lazy_cfg)
 end
 
 return main

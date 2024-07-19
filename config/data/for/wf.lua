@@ -1,4 +1,5 @@
 return {
+  "Cassin01/wf.nvim",
   version = "*",
   config = function()
     require("wf").setup()
@@ -55,7 +56,7 @@ return {
     -- Which Key
     vim.keymap.set(
       "n",
-      "<Leader>",
+      "<leader>",
       -- mark(opts?: table) -> function
       -- opts?: option
       which_key({ text_insert_in_advance = "<Space>" }),

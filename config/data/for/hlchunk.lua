@@ -6,6 +6,7 @@ local excluded = {
 -- even if you saw it in their docs, it's wrong, I looked in their code
 -- the correct name because it was not working
 return {
+  "shellRaining/hlchunk.nvim",
   event = { "UIEnter", "BufReadPre", "BufNewFile" },
   config = function()
     require("hlchunk").setup({

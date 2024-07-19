@@ -1,6 +1,7 @@
 return {
+  "windwp/nvim-autopairs",
   event = "InsertEnter",
-  function()
+  config = function()
     local nvim_autopairs = require("nvim-autopairs")
     local nvim_autopairs_cmp = require("nvim-autopairs.completion.cmp")
     ---@diagnostic disable-next-line: different-requires

@@ -1,4 +1,4 @@
-local main = {}
+local main = { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile", "BufWinEnter" } }
 local fns = {
   on_attach = function(client, bufnr)
     -- local fmt = require("warm.str").format
