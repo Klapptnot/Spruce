@@ -19,7 +19,7 @@ function main.replace_buffer(file_path)
 
   if buf == 0 then return cur_win, buf, cur_buf end
 
-  vim.api.nvim_buf_set_option(buf, "buflisted", false) -- Set as unlisted/hidden
+  vim.api.nvim_set_option_value("buflisted", false, { buf = buf }) -- Set as unlisted/hidden
   vim.api.nvim_win_set_buf(cur_win, buf) -- Atach the buffer to window
   return cur_win, buf, cur_buf
 end
@@ -42,14 +42,16 @@ vim.api.nvim_create_user_command("SpruceConfig", function(opts)
     )
     return
   end
+  local nvcfg = vim.fn.stdpath("config")
+  ---@cast nvcfg string
   if arg1 == "--cdir" then
-    vim.fn.chdir(vim.fn.stdpath("config"))
+    vim.fn.chdir(nvcfg)
     return
   elseif arg1 == "--help" then
     vim.api.nvim_command("help SpruceConfig")
     return
   elseif arg1 == "--reload" then
-    vim.api.nvim_command("source " .. vim.fn.stdpath("config") .. "/init.lua")
+    vim.api.nvim_command("source " .. nvcfg .. "/init.lua")
     return
   elseif arg1 == "--return" then
     if main.cur_into == nil then
@@ -83,12 +85,12 @@ vim.api.nvim_create_user_command("SpruceConfig", function(opts)
     main.cur_into = nil
     return
   elseif arg1 == "--init" then
-    local cfg_file = vim.fn.stdpath("config") .. "/init.lua"
+    local cfg_file = nvcfg .. "/init.lua"
     local w, b, p = main.replace_buffer(cfg_file)
     main.cur_into = { "init.lua", w, b, p }
     return
   elseif arg1 == "--loader" then
-    local cfg_file = vim.fn.stdpath("config") .. "/config/init.lua"
+    local cfg_file = nvcfg .. "/config/init.lua"
     local w, b, p = main.replace_buffer(cfg_file)
     main.cur_into = { "config/init.lua", w, b, p }
     return
@@ -105,7 +107,7 @@ vim.api.nvim_create_user_command("SpruceConfig", function(opts)
       end
       ov_file = "/custom/" .. opts.fargs[2] .. ".lua"
     end
-    local cfg_file = vim.fn.stdpath("config") .. ov_file
+    local cfg_file = nvcfg .. ov_file
     local w, b, p = main.replace_buffer(cfg_file)
     main.cur_into = { "custom/init.lua", w, b, p }
     return
@@ -130,7 +132,7 @@ vim.api.nvim_create_user_command("SpruceConfig", function(opts)
   end
   local cfg_type = "/config/data/"
   if opts.fargs[2] == "--custom" then cfg_type = "/custom/" end
-  local cfg_file = vim.fn.stdpath("config") .. cfg_type .. file .. ".lua"
+  local cfg_file = nvcfg .. cfg_type .. file .. ".lua"
   local w, b, p = main.replace_buffer(cfg_file)
   main.cur_into = { cfg_type .. file .. ".lua", w, b, p }
 end, {

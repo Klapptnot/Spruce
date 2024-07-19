@@ -103,7 +103,7 @@ function main.rawgen(name)
   assert(ths ~= nil, str.format("Unable to generate script for {}", name))
 
   local buf = vim.api.nvim_create_buf(true, false)
-  vim.api.nvim_buf_set_option(buf, "filetype", "lua")
+  vim.api.nvim_set_option_value("filetype", "lua", { buf = buf })
   vim.api.nvim_buf_set_name(buf, name .. ".lua")
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, str.split(ths, "\n"))
   vim.api.nvim_win_set_buf(0, buf)
