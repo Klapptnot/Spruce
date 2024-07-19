@@ -3,11 +3,10 @@
 local main = {}
 
 local color = require("warm.color")
-local path = require("warm.path")
 local str = require("warm.str")
 local uts = require("warm.uts")
 
-local SPRUCE_VIBIB_CACHE = path.join(SPRUCE_CACHE, "vibib.lua")
+local SPRUCE_VIBIB_CACHE = vim.fs.joinpath(SPRUCE_CACHE, "vibib.lua")
 
 SPRUCE = {
   vibib = {
@@ -67,7 +66,6 @@ end
 -- }
 
 local HEADER = [[
-local path = require("warm.path")
 local str = require("warm.str")
 
 return function ()
@@ -76,14 +74,12 @@ return function ()
   local igit = vim.b[sbuf].gitsigns_head or vim.b[sbuf].gitsigns_git_status
   local name = vim.api.nvim_buf_get_name(sbuf)
   local skip = vim.api.nvim_get_current_win() ~= vim.g.statusline_winid
+  local bfft = str.fallback(vim.bo[sbuf].filetype, "unknown")
 
   if skip then
-    return string.format(
-      "  INACTIVE> %s%%=%s",
-      (str.boolean(name) and path.basename(name)) or "Empty",
-      str.fallback(vim.bo[sbuf].filetype, "unknown")
-    )
+    return string.format("  INACTIVE> %s%%=%s", (str.boolean(name) and vim.fs.basename(name)) or "Empty", bfft)
   end
+  local not_terminal = bfft ~= "terminal"
 
   -- left/right separator icon
   local lis, ris = "{<lis>}", "{<ris>}"
@@ -163,9 +159,8 @@ local blocks = {
       ["sp"]  = { "SPRUCE",     "Vibib_mode_other" },
     }
 
-    if str.has("neo-tree,Outline", str.fallback(vim.bo[sbuf].filetype, "unknown")) then
-      return vim_modes[modi][1] .. " in "
-      .. str.fallback(vim.bo[sbuf].filetype, "unknown")
+    if str.has("neo-tree,Outline", bfft) then
+      return vim_modes[modi][1] .. " in " .. bfft
     end
 
     local mode, color = table.unpack(vim_modes[modi])
@@ -175,7 +170,7 @@ local blocks = {
   file = [[
   do
     local icon = "󰈚 " -- Default icon
-    local file = (str.boolean(name) and path.basename(name)) or "Empty"
+    local file = (str.boolean(name) and vim.fs.basename(name)) or "Empty"
 
     -- Get the right icon for the file
     if file ~= "Empty" then
@@ -184,25 +179,26 @@ local blocks = {
       if loaded then icon = devicons.get_icon(file) or icon end
     end
 
-    bar[#bar + 1] =
-      string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
+    if not_terminal then
+      bar[#bar + 1] =
+        string.format("%%#Vibib_file# %s %s (buf: %%n)%%{getbufvar(bufnr('%%'),'&mod')?' ⬬':''} %%#StatusLine#", icon, file)
+    else
+      bar[#bar + 1] =
+        string.format("%%#Vibib_file# %s %s (buf: %%n) %%#StatusLine#", icon, file)
+    end
   end]],
 
-  file_type = [[
-  do
-    local type = str.fallback(vim.bo[sbuf].filetype, "unknown")
-    bar[#bar + 1] = "%#Vibib_file_type# " .. type .. " "
-  end]],
+  file_type = [[  if not_terminal then bar[#bar + 1] = "%#Vibib_file_type# " .. bfft .. " " end]],
 
   file_eol = [[
-  do
+  if not_terminal then do
     local eol = vim.bo[sbuf].fileformat
     if eol == "unix" then
       bar[#bar + 1] = "%#Vibib_file_eol# LF "
     else
       bar[#bar + 1] = "%#Vibib_file_eol# CRLF "
     end
-  end]],
+  end end]],
 
   file_encoding = [[
   do
@@ -212,10 +208,10 @@ local blocks = {
     end
   end]],
 
-  cursor_pos = [[  bar[#bar + 1] = "%#Vibib_cursor_pos# (%p%%) Ch:Ln/Tl %c:%l/%L => [%b][0x%B] "]],
+  cursor_pos = [[  bar[#bar + 1] = "%#Vibib_cursor_pos# (%p%%) %c:%l/%L => [%b][0x%B] "]],
 
   git_info = [[
-  do
+  if not_terminal then do
     if igit then
       local gst = vim.b[sbuf].gitsigns_status_dict
       gst = {
@@ -233,10 +229,10 @@ local blocks = {
         vim.b[sbuf].gitsigns_status_dict.head
       )
     end
-  end]],
+  end end]],
 
   lsp_info = [[
-  do
+  if not_terminal then do
     if rawget(vim, "lsp") ~= nil then
       for _, lsp in ipairs(vim.lsp.get_clients({bufnr=sbuf})) do
         if lsp.name ~= "null-ls" and lsp.attached_buffers[sbuf] ~= nil then
@@ -257,12 +253,12 @@ local blocks = {
       if stat[4] and stat[4] > 0 then stats[4] = "%#Vibib_lsp_info_errorF#  " .. stat[4] end
       bar[#bar + 1] = table.concat(stats, "") .. " "
     end
-  end]],
+  end end]],
 
   cwd = [[
-  bar[#bar + 1] = "%#Vibib_cwd# 󰉖 "
-    .. str.fallback(path.basename(vim.fn.getcwd()), "")
-    .. " "]],
+  if not_terminal then bar[#bar + 1] = "%#Vibib_cwd# 󰉖 "
+    .. str.fallback(vim.fs.basename(vim.fn.getcwd()), "")
+    .. " " end]],
 }
 
 function main.add_vim_expr(expr)
@@ -318,28 +314,18 @@ local default = {
       main.blocks.FILE_EOL,
       main.blocks.CWD,
       main.add_lua_fn(function(_)
-        local win = require("plenary.popup").create("", {
-          title = "New CWD",
-          style = "minimal",
-          borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-          borderhighlight = "pathBr",
-          titlehighlight = "pathToGo",
-          focusable = true,
+        require("src.spruce.api").simple_input_popup({
+          title = "Change work directory",
+          title_hi = "AccHiMauveF",
+          border_hi = "AccHiMauveF",
           width = 50,
           height = 1,
+          callback = function (text)
+            if #text == 0 then return end
+            local _, err = pcall(vim.fn.chdir, text)
+            if err ~= nil then vim.api.nvim_echo({ { err, "ErrorMsg" } }, true, {}) end
+          end
         })
-
-        vim.cmd("normal A")
-        vim.cmd("startinsert")
-
-        vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = 0 })
-
-        vim.keymap.set({ "i", "n" }, "<CR>", function()
-          local new = vim.trim(vim.fn.getline("."))
-          vim.api.nvim_win_close(win, true)
-          vim.cmd.stopinsert()
-          vim.fn.chdir(new)
-        end, { buffer = 0 })
       end),
     },
   },
