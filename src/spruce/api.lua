@@ -13,8 +13,10 @@ function main.is_visual()
   return (mode == "v" or mode == "V" or mode == "\\<C-V>")
 end
 
-function main.is_buf_modifiable() return vim.api.nvim_buf_get_option(0, "modifiable") end
-function main.is_buf_modified() return vim.api.nvim_buf_get_option(0, "modified") end
+function main.is_buf_modifiable()
+  return vim.api.nvim_get_option_value("modifiable", { buf = 0 })
+end
+function main.is_buf_modified() return vim.api.nvim_get_option_value("modified", { buf = 0 }) end
 function main.is_buf_named() return vim.api.nvim_buf_get_name(0) ~= "" end
 function main.is_buf_empty()
   local lns = vim.api.nvim_buf_get_lines(0, 0, -1, false)
@@ -64,24 +66,85 @@ function main.get_visual_selection_lines()
   return vim.api.nvim_buf_get_lines(0, line_start - 1, line_end, false)
 end
 
----Returns the visual selection string (if one line) or list of strings (if multiple lines)
+---Get (only the selected part of) the visual selection line by line and the positions of selection
 --
--- Usually used inside vim.schedule(function() <here> end) if v mode is active
----@return string[]|string
+-- Usually used inside vim.schedule(function() <here> end)
+---@return string[] lines
+---@return integer start_line_num
+---@return integer start_col_num
+---@return integer end_line_num
+---@return integer end_col_num
 function main.get_visual_selection()
-  local line_start = vim.fn.getpos("'<")[2]
-  local col_start = vim.fn.getpos("'<")[3]
-  local line_end = vim.fn.getpos("'>")[2]
-  local col_end = vim.fn.getpos("'>")[3]
+  local _, sln, scn, _ = table.unpack(vim.fn.getpos("'<"))
+  local _, eln, ecn, _ = table.unpack(vim.fn.getpos("'>"))
 
-  local lines = vim.api.nvim_buf_get_lines(0, line_start - 1, line_end, false)
+  local lines = vim.api.nvim_buf_get_lines(0, sln - 1, eln, false)
 
-  if line_start == line_end then -- One line
-    return lines[1]:sub(col_start, col_end)
+  if sln == eln then
+    lines[1] = lines[1]:sub(scn, ecn)
+  else
+    lines[1] = lines[1]:sub(scn)
+    lines[#lines] = lines[#lines]:sub(1, ecn)
   end
-  lines[1] = lines[1]:sub(col_start)
-  lines[#lines] = lines[#lines]:sub(1, col_end)
-  return lines
+
+  return lines, sln, scn, eln, ecn
+end
+
+---Simple input reading popup window
+---@param opts {title:string?,title_hi:string?,border_hi:string?,width:integer?,height:integer?,callback:fun(text:string)}
+function main.simple_input_popup(opts)
+  assert(type(opts) == "table", "argument #1 must be a table")
+  assert(type(opts.callback) == "function", "callback must be a function")
+  local title_value = {
+    { opts.title or "", opts.title_hi or "FloatTitle" },
+  }
+  opts.border_hi = opts.border_hi or "FloatBorder"
+  opts.width = opts.width or 50
+  opts.height = opts.height or 1
+
+  local buf_id = vim.api.nvim_create_buf(false, true)
+  local fwin = vim.api.nvim_open_win(buf_id, true, {
+    relative = "editor",
+    focusable = true,
+    noautocmd = true,
+    row = 1,
+    col = 1,
+    width = opts.width,
+    height = opts.height,
+    title = title_value,
+    style = "minimal",
+    border = {
+      { "╭", "AccHiYogurtF" },
+      { "─", "AccHiYogurtF" },
+      { "╮", "AccHiYogurtF" },
+      { "│", "AccHiYogurtF" },
+      { "╯", "AccHiYogurtF" },
+      { "─", "AccHiYogurtF" },
+      { "╰", "AccHiYogurtF" },
+      { "│", "AccHiYogurtF" },
+    },
+  })
+  vim.cmd("normal A")
+  vim.cmd("startinsert")
+
+  vim.keymap.set({ "i", "n" }, "<Esc>", "<cmd>q<CR>", { buffer = buf_id })
+
+  vim.keymap.set({ "i", "n" }, "<CR>", function()
+    local buf_text = vim.trim(vim.fn.getline("."))
+    vim.api.nvim_win_close(fwin, true)
+    vim.cmd.stopinsert()
+    vim.api.nvim_buf_delete(buf_id, { force = true })
+    opts.callback(buf_text)
+  end, { buffer = buf_id })
+end
+
+---`vim.api.nvim_command` wrapper to just print errors as they where called in command-line
+---@param command string
+function main.pnvim_command(command)
+  local ok, err = pcall(vim.api.nvim_command, command)
+  if not ok then
+    vim.api.nvim_echo({ { string.match(tostring(err), ":(E%d-:.+)"), "ErrorMsg" } }, true, {})
+  end
 end
 
 ---Same as pressing 'y' or 'yy', copy the line or selection to the " register
@@ -250,11 +313,18 @@ function main.toggle_vterm() require("src.spruce.term.api").toggle("vertical", t
 function main.toggle_hterm() require("src.spruce.term.api").toggle("horizontal", true) end
 function main.toggle_fterm() require("src.spruce.term.api").toggle("floating", true) end
 
--- Placeholder for tabs in the main window
-
-function main.tab_prev() end
-function main.tab_next() end
-function main.tab_close() end
+function main.tab_new() main.pnvim_command("tabnew") end
+function main.tab_prev() main.pnvim_command("tabprev") end
+function main.tab_next() main.pnvim_command("tabnext") end
+function main.tab_close() main.pnvim_command("tabclose") end
+function main.tab_rename()
+  main.simple_input_popup({
+    callback = function(text) main.pnvim_command("TabRename " .. tostring(text)) end,
+    title = "Tab new name",
+    title_hi = "AccHiYogurtF",
+    border_hi = "AccHiYogurtF",
+  })
+end
 
 -- Placeholder for find/replace
 
@@ -435,7 +505,7 @@ function main.toggle_inlayhints()
     )
     return
   end
-  vim.lsp.inlay_hint(0, nil)
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
 end
 
 -- Duplicate current visual selection
@@ -444,24 +514,9 @@ function main.duplicate_selection()
   -- local curpos = vim.fn.getcurpos()
   main.press_esc_key(vim.fn.mode()) -- Back to normal mode
   vim.schedule(function()
-    -- Get the visual selection range
-    local line_start = vim.fn.getpos("'<")[2]
-    local col_start = vim.fn.getpos("'<")[3]
-    local line_end = vim.fn.getpos("'>")[2]
-    local col_end = vim.fn.getpos("'>")[3]
+    local lines, _, _, eln, ecn = main.get_visual_selection()
 
-    local lines = vim.fn.getline(line_start, line_end)
-
-    -- If single line, duplicate string
-    if #lines == 1 then
-      vim.api.nvim_win_set_cursor(0, { line_start, col_end - 1 })
-      vim.api.nvim_put({ lines[1]:sub(col_start, col_end) }, "", true, true)
-      return
-    end
-
-    lines[1] = lines[1]:sub(col_start)
-    lines[#lines] = lines[#lines]:sub(1, col_end)
-    vim.api.nvim_win_set_cursor(0, { line_end, col_end - 1 })
+    vim.api.nvim_win_set_cursor(0, { eln, ecn - 1 })
     vim.api.nvim_put(lines, "", true, true)
   end)
 end
