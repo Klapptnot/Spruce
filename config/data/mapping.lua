@@ -5,8 +5,8 @@ local __def_opts_vim__ = { silent = true }
 
 ---@alias SpruceKeyMapp {mapp:string, mode:string[], exec:fun()|string, desc:string?, opts:table<string, any>?}
 
----@type SpruceKeyMapp
-local __map__ = {
+---@type SpruceKeyMapp[]
+return {
   -- ^ Lua functions
   {
     mapp = "<C-s>",
@@ -25,7 +25,7 @@ local __map__ = {
   },
 
   {
-    mapp = "<Tab>",
+    mapp = "th",
     mode = { "n", "v" },
     exec = api.tab_prev,
     desc = "Go to prev tab/buffer",
@@ -33,7 +33,7 @@ local __map__ = {
   },
 
   {
-    mapp = "<S-tab>",
+    mapp = "tl",
     mode = { "n", "v" },
     exec = api.tab_next,
     desc = "Go to next tab/buffer",
@@ -41,9 +41,25 @@ local __map__ = {
   },
 
   {
-    mapp = "<C-w>",
+    mapp = "tk",
+    mode = { "n", "v" },
+    exec = api.tab_new,
+    desc = "Add a new tab/buffer",
+    opts = __def_opts_lua__,
+  },
+
+  {
+    mapp = "tj",
     mode = { "n", "v" },
     exec = api.tab_close,
+    desc = "Close tab/buffer",
+    opts = __def_opts_lua__,
+  },
+
+  {
+    mapp = "tr",
+    mode = { "n", "v" },
+    exec = api.tab_rename,
     desc = "Close tab/buffer",
     opts = __def_opts_lua__,
   },
@@ -371,5 +387,3 @@ local __map__ = {
     opts = __def_opts_vim__,
   },
 }
-
-return __map__
