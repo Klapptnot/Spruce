@@ -3,8 +3,8 @@ local fns = {
   on_attach = function(client, bufnr)
     -- local fmt = require("warm.str").format
     local mapps = require("config.data.for.lspconfig.mapping")
-    for meth, prop in pairs(mapps) do
-      if client.supports_method(meth) then
+    for _, prop in ipairs(mapps) do
+      if client.supports_method(prop.meth) then
         prop.opts.desc = prop.desc -- Just to not nest items
         if type(prop.exec) == "function" then
           prop.opts.callback = prop.exec
