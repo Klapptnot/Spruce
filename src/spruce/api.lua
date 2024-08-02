@@ -162,7 +162,7 @@ function main.copy()
     end)
   else
     vim.api.nvim_notify("Copied from 1 line", vim.log.levels.INFO, { title = "Spruce API" })
-    vim.fn.setreg('"', vim.fn.getline("."))
+    vim.fn.setreg('"', vim.api.nvim_get_current_line())
   end
 end
 
@@ -174,7 +174,7 @@ function main.paste()
     vim.log.levels.INFO,
     { title = "Spruce API" }
   )
-  vim.api.nvim_paste(vim.fn.getreg('"'), true, -1)
+  vim.api.nvim_paste(tostring(vim.fn.getreg('"'):sub(1, -2)), false, -1)
 end
 
 function main.save()
