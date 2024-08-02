@@ -60,7 +60,7 @@ return {
     mapp = "tr",
     mode = { "n", "v" },
     exec = api.tab_rename,
-    desc = "Close tab/buffer",
+    desc = "Rename current tab/buffer",
     opts = __def_opts_lua__,
   },
 
@@ -193,7 +193,7 @@ return {
   },
 
   {
-    mapp = "<C-r>",
+    mapp = "<C-y>",
     mode = { "n", "v", "i" },
     exec = api.redo,
     desc = "Redo",
@@ -240,24 +240,24 @@ return {
     opts = __def_opts_lua__,
   },
 
-  {
-    mapp = "<ScrollWheelUp>",
-    mode = { "n", "v", "t" },
-    exec = "3<C-Y>",
-    desc = "Scroll up",
-    opts = __def_opts_vim__,
-  },
+  -- {
+  --   mapp = "<ScrollWheelUp>",
+  --   mode = { "n", "v", "t" },
+  --   exec = "<PageUp>",
+  --   desc = "Scroll up",
+  --   opts = __def_opts_vim__,
+  -- },
+  --
+  -- {
+  --   mapp = "<ScrollWheelDown>",
+  --   mode = { "n", "v", "t" },
+  --   exec = "<PageDown>",
+  --   desc = "Scroll down",
+  --   opts = __def_opts_vim__,
+  -- },
 
   {
-    mapp = "<ScrollWheelDown>",
-    mode = { "n", "v", "t" },
-    exec = "3<C-E>",
-    desc = "Scroll down",
-    opts = __def_opts_vim__,
-  },
-
-  {
-    mapp = "<Home>",
+    mapp = "<khome>",
     mode = { "n", "v", "i" },
     exec = api.home_key,
     desc = "Go to line home or line start",
@@ -282,7 +282,7 @@ return {
   },
 
   {
-    mapp = "<C-_>",
+    mapp = "<C-/>",
     mode = { "n", "i" },
     exec = '<cmd> lua require("Comment.api").toggle.linewise.current() <CR>',
     desc = "Toggle comment",
@@ -290,7 +290,7 @@ return {
   },
 
   {
-    mapp = "<C-_>",
+    mapp = "<C-/>",
     mode = { "v" },
     exec = '<ESC><cmd> lua require("Comment.api").toggle.linewise(vim.fn.visualmode()) <CR>',
     desc = "Toggle comments in visual mode",

@@ -8,9 +8,13 @@ return {
   { "nvim-telescope/telescope.nvim", tag = "0.1.5" },
   --#endregion
 
-  { "folke/trouble.nvim", lazy = true },
+  { "folke/trouble.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "RRethy/vim-illuminate", event = { "BufReadPre", "BufNewFile" } },
-  { "numToStr/Comment.nvim", opts = {}, event = { "BufReadPre", "BufNewFile" } },
+  {
+    "numToStr/Comment.nvim",
+    opts = {},
+    event = { "BufReadPre", "BufNewFile" },
+  },
   { "stevearc/dressing.nvim" },
 
   require("config.data.for.wf"),
@@ -26,7 +30,8 @@ return {
   require("config.data.for.null_ls"),
   require("config.data.for.masonlsp"),
   require("config.data.for.lspconfig"),
-  -- { "folke/which-key.nvim", event = "VeryLazy", },
+  { "mg979/vim-visual-multi", event = { "UIEnter" } },
+-- { "folke/which-key.nvim", event = "VeryLazy", },
 
   {
     "utilyre/barbecue.nvim",
@@ -46,7 +51,10 @@ return {
       })
     end,
   },
-
+  {
+    "NvChad/nvim-colorizer.lua",
+    init = function() require("colorizer").setup({}) end,
+  },
   {
     "rcarriga/nvim-notify",
     name = "notify",

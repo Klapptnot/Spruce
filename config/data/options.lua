@@ -31,4 +31,5 @@ return {
   undofile = true,
   showtabline = 2,
   cmdheight = 1,
+  scroll = 1,
 }
