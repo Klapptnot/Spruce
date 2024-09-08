@@ -63,7 +63,7 @@ main.config = function()
     },
   })
   lspconfig.rust_analyzer.setup(fns.basic_opts)
-  lspconfig.tsserver.setup(fns.basic_opts)
+  lspconfig.ts_ls.setup(fns.basic_opts)
   lspconfig.ruff.setup(fns.basic_opts)
   lspconfig.jsonls.setup({
     hints = {
