@@ -11,10 +11,10 @@ do -- Add config folder to package.path
   }
   -- stylua: ignore
   package.path = package.path
-    -- ";{}/?/init.lua"
-    .. p.d .. nvcfg .. p.s .. p.p .. p.s .. "init.lua"
-    -- ";{}/?.lua"
-    .. p.d .. nvcfg .. p.s .. p.p .. ".lua"
+      -- ";{}/?/init.lua"
+      .. p.d .. nvcfg .. p.s .. p.p .. p.s .. "init.lua"
+      -- ";{}/?.lua"
+      .. p.d .. nvcfg .. p.s .. p.p .. ".lua"
 end
 
 -- Space is <leader> key
@@ -23,6 +23,7 @@ vim.g.mapleader = " "
 -- Initialize things that needs to be downloaded, like lazy
 require("src.bootstrap") -- This creates the `custom` folder and init.lua
 
+---@type SpruceConfig
 local config = require("config")
 ---@type table<string, table<any, any>>
 local custom = require("custom")
@@ -42,3 +43,6 @@ require("src.spruce.tweaks").apply({ "lua_functions", "reset_cursor", "detect_in
 
 -- Load spruce files
 require("src.spruce")
+
+-- Never forget to be high-spirited!
+vim.cmd.colorscheme("catppuccin")
