@@ -31,7 +31,7 @@ return {
   require("config.data.for.masonlsp"),
   require("config.data.for.lspconfig"),
   { "mg979/vim-visual-multi", event = { "UIEnter" } },
--- { "folke/which-key.nvim", event = "VeryLazy", },
+  -- { "folke/which-key.nvim", event = "VeryLazy", },
 
   {
     "utilyre/barbecue.nvim",
@@ -71,23 +71,9 @@ return {
     name = "catppuccin",
     priority = 1000,
     config = function()
-      require("catppuccin").setup()
-      --   vim.cmd.colorscheme("catppuccin")
-    end,
-  },
-
-  {
-    "EdenEast/nightfox.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require("nightfox").setup({
-        options = {
-          terminal_colors = true,
-          transparent = true,
-        },
+      require("catppuccin").setup({
+        transparent_background = true,
       })
-      vim.cmd.colorscheme("duskfox")
     end,
   },
 }

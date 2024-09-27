@@ -201,7 +201,7 @@ return {
   },
 
   {
-    mapp = "<M-1>",
+    mapp = "<C-`>",
     mode = { "n", "v", "t" }, -- Allow hiding term when in terminal mode
     exec = api.toggle_hterm,
     desc = "Toggle horizontal terminal",
@@ -209,7 +209,7 @@ return {
   },
 
   {
-    mapp = "<M-2>",
+    mapp = "<M-1>",
     mode = { "n", "v", "t" },
     exec = api.toggle_vterm,
     desc = "Toggle vertical terminal",
@@ -217,7 +217,7 @@ return {
   },
 
   {
-    mapp = "<M-3>",
+    mapp = "<M-2>",
     mode = { "n", "v", "t" },
     exec = api.toggle_fterm,
     desc = "Toggle floating terminal",
@@ -273,6 +273,14 @@ return {
   },
 
   -- ^ Vim expressions
+  {
+    mapp = "<C-BS>",
+    mode = { "i" },
+    exec = "<C-w>",
+    desc = "Delete word backwards",
+    opts = __def_opts_vim__,
+  },
+
   {
     mapp = "<leader>so",
     mode = { "n" },
