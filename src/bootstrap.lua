@@ -1,3 +1,5 @@
+---@diagnostic disable: param-type-mismatch
+---
 -- Set lazy as it appears in GitHub
 local lazypath = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "lazy.nvim")
 -- Clone repo if lazy is not found

@@ -106,7 +106,7 @@ function drawer:spawn_floating_hint(wininfo)
   local mi = 0
   -- Add color to each window
   vim.api.nvim_win_call(window_id, function()
-    vim.api.nvim_set_hl(0, hi, { fg = color, bg = "#101010" })
+    vim.api.nvim_set_hl(0, hi, { fg = color })
     mi = vim.fn.matchadd(hi, [[.*]])
   end)
   return { window_id, mi }

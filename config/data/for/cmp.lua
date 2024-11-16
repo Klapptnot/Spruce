@@ -112,13 +112,13 @@ return {
           --     
           -- stylua: ignore
           vim_item.menu = ({
-            nvim_lsp = "[LSP]",
-            nvim_lua = "[LUA]",
-            luasnip  = "[LSN]",
-            buffer   = "[BUF]",
+            nvim_lsp = " 󰒌 ",
+            nvim_lua = "  ",
+            luasnip  = "  ",
+            buffer   = "  ",
             path     = "  ",
             calc     = " 󰃬 ",
-            cmdline  = "  "
+            cmdline  = "  "
           })[entry.source.name] or '[ANY]'
 
           return vim_item

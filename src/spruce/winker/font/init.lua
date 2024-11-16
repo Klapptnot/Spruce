@@ -82,9 +82,9 @@ function main.load(fontname)
     local bs = {}
     for i = 1, #s do
       local ct = self:get_char(s:sub(i, i + 1)).l
-      for i, s in ipairs(ct) do
-        if bs[i] == nil then bs[i] = "" end
-        bs[i] = bs[i] .. s
+      for j, l in ipairs(ct) do
+        if bs[j] == nil then bs[j] = "" end
+        bs[j] = bs[j] .. l
       end
     end
     return table.concat(bs, "\n")

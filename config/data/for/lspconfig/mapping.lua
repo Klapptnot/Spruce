@@ -17,6 +17,14 @@ return {
     opts = __opts__,
   },
   {
+    meth = "textDocument/codeAction",
+    mapp = "<C-.>",
+    mode = { "n", "i", "v" },
+    exec = vim.lsp.buf.code_action,
+    desc = "Get code actions using LSP provider",
+    opts = __opts__,
+  },
+  {
     meth = "textDocument/declaration",
     mapp = "<leader>ld",
     mode = { "n" },
