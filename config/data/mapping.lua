@@ -338,6 +338,14 @@ return {
   },
 
   {
+    mapp = "<leader><leader>",
+    mode = { "n" },
+    exec = "<cmd> Telescope buffers <CR>",
+    desc = "Telescope: Find buffers",
+    opts = __def_opts_vim__,
+  },
+
+  {
     mapp = "<leader>fh",
     mode = { "n" },
     exec = "<cmd> Telescope help_tags <CR>",
